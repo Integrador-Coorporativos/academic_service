@@ -3,6 +3,7 @@ package br.com.ifrn.EvaluationsService.evaluations_service.controller;
 import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.ProcessingControllerDocs;
 import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.StudentPerformanceControllerDocs;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +28,12 @@ public class ProcessingController implements ProcessingControllerDocs {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/uploadFile")
+    @PostMapping(
+            value="/uploadFile"
+    )
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 
     @DeleteMapping("/imports/{id}")
     public ResponseEntity<?> deleteFile(@PathVariable String id) {

@@ -20,8 +20,8 @@ public class ClassEvaluations {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer class_id;
-    private Integer professor_id;
+    private Integer classId;
+    private Integer professorId;
     private LocalDate date;
     private float averageScore;
 

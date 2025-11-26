@@ -4,6 +4,8 @@ package br.com.ifrn.EvaluationsService.evaluations_service.controller;
 import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.ClassEvaluationsControllerDocs;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseClassEvaluationsDTO;
+import br.com.ifrn.EvaluationsService.evaluations_service.services.ClassEvaluationsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,33 +16,37 @@ import java.util.List;
 @RequestMapping("/api/evaluations")
 public class ClassEvaluationsController implements ClassEvaluationsControllerDocs {
 
+    @Autowired
+    private ClassEvaluationsService classEvaluationsService;
+
     @GetMapping
     public ResponseEntity<List<ResponseClassEvaluationsDTO>> getAllEvaluations() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(classEvaluationsService.getAllEvaluations());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseClassEvaluationsDTO> getEvaluationById(@PathVariable String id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResponseClassEvaluationsDTO> getEvaluationById(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(classEvaluationsService.getEvaluationById(id));
     }
 
     @GetMapping("/class/{id}")
-    public ResponseEntity<List<ResponseClassEvaluationsDTO>> getEvaluationsByClassId(@PathVariable String id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<ResponseClassEvaluationsDTO>> getEvaluationsByClassId(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(classEvaluationsService.getEvaluationsByClassId(id));
     }
 
     @PostMapping
     public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(classEvaluationsService.createEvaluation(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseClassEvaluationsDTO> updateEvaluation(@PathVariable String id, @RequestBody RequestClassEvaluationsDTO dto) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResponseClassEvaluationsDTO> updateEvaluation(@PathVariable Integer id, @RequestBody RequestClassEvaluationsDTO dto) {
+        return ResponseEntity.ok().body(classEvaluationsService.updateEvaluation(id,dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvaluation(@PathVariable String id) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    public ResponseEntity<?> deleteEvaluation(@PathVariable Integer id) {
+        classEvaluationsService.deleteEvaluation(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

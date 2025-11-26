@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 @Getter @Setter
 public class RequestClassEvaluationsDTO {
-    private Integer class_id;
-    private Integer professor_id;
+    private Integer classId;
+    private Integer professorId;
     private LocalDate date;
     private float averageScore;
 }

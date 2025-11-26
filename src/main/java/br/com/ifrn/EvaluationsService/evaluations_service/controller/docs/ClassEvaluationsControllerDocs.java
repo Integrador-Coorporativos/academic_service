@@ -34,7 +34,7 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "404", description = "Avaliação não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> getEvaluationById(@PathVariable String id);
+    public ResponseEntity<ResponseClassEvaluationsDTO> getEvaluationById(@PathVariable Integer id);
     @Operation(summary = "Listar avaliações por turma",
             description = "Retorna todas as avaliações associadas a uma turma específica.")
     @ApiResponses({
@@ -44,7 +44,7 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<List<ResponseClassEvaluationsDTO>> getEvaluationsByClassId(@PathVariable String id);
+    public ResponseEntity<List<ResponseClassEvaluationsDTO>> getEvaluationsByClassId(@PathVariable Integer id);
 
     @Operation(summary = "Criar nova avaliação", description = "Cria uma nova avaliação para uma turma.")
     @ApiResponses({
@@ -67,7 +67,7 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "404", description = "Avaliação não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> updateEvaluation(@PathVariable String id,
+    public ResponseEntity<ResponseClassEvaluationsDTO> updateEvaluation(@PathVariable Integer id,
                                                                         @RequestBody RequestClassEvaluationsDTO dto);
 
     @Operation(summary = "Excluir avaliação", description = "Remove uma avaliação específica do sistema.")
@@ -76,5 +76,5 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "404", description = "Avaliação não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> deleteEvaluation(@PathVariable String id);
+    public ResponseEntity<?> deleteEvaluation(@PathVariable Integer id);
 }

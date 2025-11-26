@@ -26,6 +26,7 @@ public class StudentPerformance {
     private float averageScore;
     private float attendenceRate;
     private Integer failedSubjects;
+    private float ira;
     private String status;
     private LocalDate lastUpdate;
 
