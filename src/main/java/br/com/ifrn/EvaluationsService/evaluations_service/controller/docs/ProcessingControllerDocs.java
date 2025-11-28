@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 
+import java.io.IOException;
+
 @Tag(name = "Processamento de Planilhas", description = "Endpoints para upload, download e histórico de planilhas de alunos, cursos e turmas")
 public interface ProcessingControllerDocs {
 
@@ -48,7 +50,7 @@ public interface ProcessingControllerDocs {
             @ApiResponse(responseCode = "422", description = "Erro ao processar planilha"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file);
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException;
 
     @Operation(summary = "Excluir histórico de importação",
             description = "Remove um registro do histórico de uploads de planilhas.")
