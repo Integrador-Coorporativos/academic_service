@@ -1,0 +1,47 @@
+name: Testes e Relatórios
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Dar permissão de execução ao mvnw
+        run: chmod +x ./mvnw
+
+      - name: Configurar Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Rodar testes
+        run: ./mvnw clean test
+
+      - name: Gerar relatório Surefire HTML
+        run: ./mvnw surefire-report:report
+
+      - name: Publicar relatórios como artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-de-teste
+          path: |
+            target/site/surefire-report.html
+            target/surefire-reports/
+
