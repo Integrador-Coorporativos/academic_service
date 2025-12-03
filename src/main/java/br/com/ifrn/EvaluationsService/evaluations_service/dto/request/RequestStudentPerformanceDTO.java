@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class RequestStudentPerformanceDTO {
-
     private Integer studentId;
     private Integer classId;
     private float averageScore;

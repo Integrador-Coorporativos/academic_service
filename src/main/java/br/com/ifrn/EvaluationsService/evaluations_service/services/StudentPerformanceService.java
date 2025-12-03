@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Service
 public class StudentPerformanceService {
+
     @Autowired
     StudentPerformanceRepository  studentPerformanceRepository;
 
@@ -27,10 +28,6 @@ public class StudentPerformanceService {
         return dto;
     }
 
-    public ResponseStudentPerformanceDTO getClassEvaluationsById(Integer id) {
-        return null;
-    }
-
     public ResponseStudentPerformanceDTO createStudentPerformance(RequestStudentPerformanceDTO requestDTO) {
         StudentPerformance studentPerformance = mapper.toEntity(requestDTO);
         studentPerformance = studentPerformanceRepository.save(studentPerformance);
@@ -42,6 +39,9 @@ public class StudentPerformanceService {
         return new ResponseStudentPerformanceDTO();
     }
 
+    public ResponseStudentPerformanceDTO getClassEvaluationsById(Integer id) {
+        return null;
+    }
 
     public ResponseStudentPerformanceDTO createStudentPerformanceByImporterDTO(ImporterDTO  importerDTO) {
         //estrutura inicial sem qualquer validação e com dados mockcados

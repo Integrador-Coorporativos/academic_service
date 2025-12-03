@@ -1,5 +1,6 @@
 package br.com.ifrn.EvaluationsService.evaluations_service.controller.docs;
 
+import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,18 +43,18 @@ public interface StudentPerformanceControllerDocs {
     public ResponseEntity<ResponseClassEvaluationsDTO> getClassEvaluationsById(@PathVariable String id);
 
     @Operation(
-            summary = "Atualizar desempenho da turma",
-            description = "Recalcula o desempenho da turma com base nas avaliações mais recentes."
+            summary = "Cadastrar desempenho do Aluno",
+            description = "Cadastra o desempenho do Aluno com base nos dados fornecidos"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Desempenho da turma atualizado",
+            @ApiResponse(responseCode = "201", description = "Desempenho do Aluno cadastrado",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseClassEvaluationsDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos enviados"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> createClassEvaluations(@PathVariable String id);
+    public ResponseEntity<ResponseStudentPerformanceDTO> createStudentPerformance(@RequestBody RequestStudentPerformanceDTO performanceDTO);
 
     @Operation(
             summary = "Atualizar desempenho individual de um aluno",

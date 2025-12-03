@@ -1,13 +1,12 @@
 package br.com.ifrn.EvaluationsService.evaluations_service.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
+
 import java.time.LocalDate;
 
 @Entity
@@ -23,6 +22,12 @@ public class ClassEvaluations {
     private Integer classId;
     private Integer professorId;
     private LocalDate date;
+
+    @Range(min = 0, max = 5)
     private float averageScore;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "criteria_id")
+    private EvaluationsCriteria criteria;
 
 }

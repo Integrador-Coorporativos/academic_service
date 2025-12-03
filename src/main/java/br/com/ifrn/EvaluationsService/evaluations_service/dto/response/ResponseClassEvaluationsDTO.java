@@ -1,5 +1,6 @@
 package br.com.ifrn.EvaluationsService.evaluations_service.dto.response;
 
+import br.com.ifrn.EvaluationsService.evaluations_service.models.EvaluationsCriteria;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +14,5 @@ public class ResponseClassEvaluationsDTO {
     private Integer professorId;
     private LocalDate date;
     private float averageScore;
+    private EvaluationsCriteria criteria;
 }

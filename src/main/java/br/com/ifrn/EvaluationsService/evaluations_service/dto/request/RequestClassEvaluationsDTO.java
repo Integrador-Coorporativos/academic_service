@@ -2,14 +2,22 @@ package br.com.ifrn.EvaluationsService.evaluations_service.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
+import org.hibernate.validator.constraints.Range;
 
 
 @Getter @Setter
 public class RequestClassEvaluationsDTO {
-    private Integer classId;
-    private Integer professorId;
-    private LocalDate date;
-    private float averageScore;
+
+    @Range(min = 0, max = 5)
+    private float frequencyScore; //frequencia
+    @Range(min = 0, max = 5)
+    private float unifirmScore; //fardamento
+    @Range(min = 0, max = 5)
+    private float behaviorScore; //comportamento
+    @Range(min = 0, max = 5)
+    private float participationScore; //participação
+    @Range(min = 0, max = 5)
+    private float performanceScore; //desempenho
+    @Range(min = 0, max = 5)
+    private float cellPhoneUseScore; //uso de celular
 }

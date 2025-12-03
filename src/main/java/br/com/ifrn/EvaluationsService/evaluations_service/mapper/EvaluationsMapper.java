@@ -3,6 +3,7 @@ package br.com.ifrn.EvaluationsService.evaluations_service.mapper;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.models.ClassEvaluations;
+import br.com.ifrn.EvaluationsService.evaluations_service.models.EvaluationsCriteria;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -22,18 +23,10 @@ public interface EvaluationsMapper {
     @Mapping(source = "averageScore", target = "averageScore")
     ClassEvaluations toClassEvaluations(ResponseClassEvaluationsDTO responseClassEvaluationsDTO);
 
-
-    @Mapping(source = "date", target = "date")
-    @Mapping(source = "professorId", target = "professorId")
-    @Mapping(source = "classId", target = "classId")
-    @Mapping(source = "averageScore", target = "averageScore")
     ClassEvaluations toClassEvaluationsRequest(RequestClassEvaluationsDTO requestClassEvaluationsDTO);
 
+    EvaluationsCriteria toEvaluationsCriteria(RequestClassEvaluationsDTO evaluationsCriteria);
 
-    @Mapping(source = "date", target = "date")
-    @Mapping(source = "professorId", target = "professorId")
-    @Mapping(source = "classId", target = "classId")
-    @Mapping(source = "averageScore", target = "averageScore")
     void updateEntityFromDto(RequestClassEvaluationsDTO dto,
                              @MappingTarget ClassEvaluations entity);
 }
