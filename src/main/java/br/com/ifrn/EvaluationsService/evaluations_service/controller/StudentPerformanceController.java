@@ -3,6 +3,8 @@ package br.com.ifrn.EvaluationsService.evaluations_service.controller;
 import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.StudentPerformanceControllerDocs;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
+import br.com.ifrn.EvaluationsService.evaluations_service.services.StudentPerformanceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/performance")
 public class StudentPerformanceController implements StudentPerformanceControllerDocs {
 
+    @Autowired
+    private StudentPerformanceService studentPerformanceService;
+
     @GetMapping("/student/{id}")
-    public ResponseEntity<ResponseStudentPerformanceDTO> getStudentPerformanceById(@PathVariable String id) {
-        return ResponseEntity.ok().body(new ResponseStudentPerformanceDTO());
+    public ResponseEntity<ResponseStudentPerformanceDTO> getStudentPerformanceById(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(studentPerformanceService.getStudentPerformanceById(id));
     }
     @GetMapping("/class/{id}")
     public ResponseEntity<ResponseClassEvaluationsDTO> getClassEvaluationsById(@PathVariable String id) {

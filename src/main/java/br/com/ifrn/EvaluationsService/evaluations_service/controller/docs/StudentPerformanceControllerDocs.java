@@ -26,7 +26,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseStudentPerformanceDTO> getStudentPerformanceById(@PathVariable String id);
+    public ResponseEntity<ResponseStudentPerformanceDTO> getStudentPerformanceById(@PathVariable Integer id);
 
     @Operation(
             summary = "Obter desempenho coletivo da turma",
