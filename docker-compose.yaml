@@ -29,12 +29,15 @@ services:
       - "8080:8080"
     networks:
       - classnet
+      - infra
     volumes:
       - ~/.m2:/root/.m2
 
 networks:
   classnet:
     driver: bridge
+  infra:
+    external: true
 
 volumes:
   pgdata:

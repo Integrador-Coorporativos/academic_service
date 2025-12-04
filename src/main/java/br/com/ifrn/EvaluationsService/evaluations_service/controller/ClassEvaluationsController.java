@@ -1,6 +1,5 @@
 package br.com.ifrn.EvaluationsService.evaluations_service.controller;
 
-
 import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.ClassEvaluationsControllerDocs;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseClassEvaluationsDTO;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

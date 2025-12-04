@@ -5,7 +5,8 @@ import br.com.ifrn.EvaluationsService.evaluations_service.dto.ResponseImporterDT
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract.FileImporter;
 import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.factory.FileImporterFactory;
-import br.com.ifrn.EvaluationsService.evaluations_service.models.StudentPerformance;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.coyote.BadRequestException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -13,20 +14,17 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProcessingService {
@@ -36,6 +34,10 @@ public class ProcessingService {
 
     @Autowired
     StudentPerformanceService studentPerformanceService;
+
+    @Autowired
+    MinioClient minioClient;
+
 
     public byte[] getTemplate() throws Exception {
 
@@ -112,6 +114,8 @@ public class ProcessingService {
     public List<ResponseImporterDTO> uploadFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) throw new BadRequestException("Please set a valid file");
 
+        String objectName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
         try (InputStream inputStream = file.getInputStream()) {
             String fileName = Optional.ofNullable(file.getOriginalFilename())
                     .orElseThrow(() -> new BadRequestException("File mame cannot be null"));
@@ -124,6 +128,18 @@ public class ProcessingService {
             for (ImporterDTO importerDTO : dataImporter){
                 responseImporterDTOList.add(processImporterDTO(importerDTO));
             };
+
+            try (InputStream uploadStream = file.getInputStream()) {
+
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket("files")
+                                .object(objectName)
+                                .stream(uploadStream, uploadStream.available(), -1)
+                                .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                                .build()
+                );//criar e lançar excessão personalizada
+            }
             return responseImporterDTOList;
 
         } catch (Exception e) {
