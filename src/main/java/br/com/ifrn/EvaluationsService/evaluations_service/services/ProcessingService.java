@@ -5,8 +5,9 @@ import br.com.ifrn.EvaluationsService.evaluations_service.dto.ResponseImporterDT
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract.FileImporter;
 import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.factory.FileImporterFactory;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import br.com.ifrn.EvaluationsService.evaluations_service.file.objectstorage.MinioClientConfig;
+import br.com.ifrn.EvaluationsService.evaluations_service.keycloak.KeycloakAdminConfig;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.coyote.BadRequestException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -24,7 +25,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ProcessingService {
@@ -36,8 +36,10 @@ public class ProcessingService {
     StudentPerformanceService studentPerformanceService;
 
     @Autowired
-    MinioClient minioClient;
+    MinioClientConfig minioClient;
 
+    @Autowired
+    KeycloakAdminConfig keycloakAdmin;
 
     public byte[] getTemplate() throws Exception {
 
@@ -114,8 +116,6 @@ public class ProcessingService {
     public List<ResponseImporterDTO> uploadFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) throw new BadRequestException("Please set a valid file");
 
-        String objectName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
         try (InputStream inputStream = file.getInputStream()) {
             String fileName = Optional.ofNullable(file.getOriginalFilename())
                     .orElseThrow(() -> new BadRequestException("File mame cannot be null"));
@@ -130,15 +130,7 @@ public class ProcessingService {
             };
 
             try (InputStream uploadStream = file.getInputStream()) {
-
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket("files")
-                                .object(objectName)
-                                .stream(uploadStream, uploadStream.available(), -1)
-                                .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                                .build()
-                );//criar e lançar excessão personalizada
+                minioClient.uploadFile(uploadStream, fileName);
             }
             return responseImporterDTOList;
 
@@ -155,6 +147,19 @@ public class ProcessingService {
         ResponseStudentPerformanceDTO studentPerformanceDTO = studentPerformanceService.createStudentPerformanceByImporterDTO(importerDTO);
         ResponseImporterDTO responseImporterDTO = new ResponseImporterDTO();
         responseImporterDTO.setStudentPerformance(studentPerformanceDTO);
+
+        Response response = keycloakAdmin.createKeycloakUser(importerDTO.getRegistration(), importerDTO.getName());
+
+        if (response.getStatus() == 201) {//fazer lógica de atualização de dados do usuário
+
+            String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+            System.out.println("Usuário criado com ID: " + userId);
+        } else {
+            System.out.println("Erro ao criar usuário: " + response.getStatus() + " " + response.getStatusInfo());
+            System.out.println(response.readEntity(String.class));
+        }
+
+
 
         //Adicionar chamadas para criação de outros Objetos
 

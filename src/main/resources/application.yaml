@@ -5,14 +5,17 @@ server:
     include-binding-errors: always
 
 spring:
+  config:
+    import: "optional:dotenv:.env"
+
   application:
     name: ClassService
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/evaluationsdb
-    username: user
-    password: pass
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     hibernate:
@@ -44,3 +47,15 @@ management:
     health:
       show-details: always
 
+keycloak:
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  server-url: ${KEYCLOAK_SERVER_URL}
+  admin-user: ${KEYCLOAK_ADMIN_USER}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+  realm: ${KEYCLOAK_REALM}
+
+minio:
+  server-url: ${MINIO_SERVER_URL}
+  admin-user: ${MINIO_ADMIN_USER}
+  admin-password: ${MINIO_ADMIN_PASSWORD}
+  bucket: ${BUCKET_NAME}

@@ -25,6 +25,18 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/evaluationsdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
+      KEYCLOAK_CLIENT_SECRET: mzjROuTev2gNJsHrSVyeNU4KF5Lgtgfe
+
+      KEYCLOAK_SERVER_URL: "http://keycloak:8080"
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KEYCLOAK_REALM: ifrn
+
+      MINIO_SERVER_URL: "http://minio:9000"
+      MINIO_ADMIN_USER: admin
+      MINIO_ADMIN_PASSWORD: admin123
+      BUCKET_NAME: files
+
     ports:
       - "8080:8080"
     networks:
