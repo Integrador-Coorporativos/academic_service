@@ -58,4 +58,5 @@ minio:
   server-url: ${MINIO_SERVER_URL}
   admin-user: ${MINIO_ADMIN_USER}
   admin-password: ${MINIO_ADMIN_PASSWORD}
-  bucket: ${BUCKET_NAME}
+  bucket-files: ${BUCKET_FILES_NAME}
+  bucket-images: ${BUCKET_IMAGES_NAME}

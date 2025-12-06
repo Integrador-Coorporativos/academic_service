@@ -8,5 +8,6 @@ public record MinioPropertiesConfig(
         String serverUrl,
         String adminUser,
         String adminPassword,
-        String bucket
+        String bucketFiles,
+        String bucketImages
 ) {}

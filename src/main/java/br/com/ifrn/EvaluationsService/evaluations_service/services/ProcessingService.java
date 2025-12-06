@@ -7,7 +7,9 @@ import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract
 import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.factory.FileImporterFactory;
 import br.com.ifrn.EvaluationsService.evaluations_service.file.objectstorage.MinioClientConfig;
 import br.com.ifrn.EvaluationsService.evaluations_service.keycloak.KeycloakAdminConfig;
+import io.minio.ObjectWriteResponse;
 import jakarta.ws.rs.core.Response;
+import lombok.SneakyThrows;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.coyote.BadRequestException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,6 +17,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -165,5 +169,15 @@ public class ProcessingService {
 
         return responseImporterDTO;
 
+    }
+
+    @SneakyThrows
+    public ObjectWriteResponse uploadImage(@RequestParam("image") MultipartFile image) {
+        try (InputStream uploadStream = image.getInputStream()) {
+            String fileName = Optional.ofNullable(image.getOriginalFilename())
+                    .orElseThrow(() -> new BadRequestException("Image mame cannot be null"));
+            ObjectWriteResponse response = minioClient.uploadImgage(uploadStream, fileName);
+            return response;
+        }catch (Exception e) {throw new Exception("Erro ao processar o arquivo: " + e);}
     }
 }

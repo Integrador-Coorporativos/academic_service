@@ -52,6 +52,17 @@ public interface ProcessingControllerDocs {
     })
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException;
 
+
+    @Operation(summary = "Upload de Imagem",
+            description = "Recebe uma imagem (.jpeg ou .png) e salva a imagem em um bucket. guardando a referencia para consulta.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Imagem salva com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Formato inválido do arquivo"),
+            @ApiResponse(responseCode = "422", description = "Erro ao salvar imagem"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image) throws IOException;
+
     @Operation(summary = "Excluir histórico de importação",
             description = "Remove um registro do histórico de uploads de planilhas.")
     @ApiResponses({

@@ -35,7 +35,8 @@ services:
       MINIO_SERVER_URL: "http://minio:9000"
       MINIO_ADMIN_USER: admin
       MINIO_ADMIN_PASSWORD: admin123
-      BUCKET_NAME: files
+      BUCKET_FILES_NAME: files
+      BUCKET_IMAGES_NAME: images
 
     ports:
       - "8080:8080"

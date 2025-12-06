@@ -4,6 +4,7 @@ import br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.Proces
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.ImporterDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.ResponseImporterDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.services.ProcessingService;
+import io.minio.ObjectWriteResponse;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -48,6 +49,14 @@ public class ProcessingController implements ProcessingControllerDocs {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE    )
     public ResponseEntity<List<ResponseImporterDTO>> uploadFile(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED).body(processingService.uploadFile(file));
+    }
+
+    @SneakyThrows
+    @PostMapping(
+            value="/uploadImage",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE    )
+    public ResponseEntity<ObjectWriteResponse> uploadImage(@RequestParam("image") MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(processingService.uploadImage(image));
     }
 
     @DeleteMapping("/imports/{id}")
