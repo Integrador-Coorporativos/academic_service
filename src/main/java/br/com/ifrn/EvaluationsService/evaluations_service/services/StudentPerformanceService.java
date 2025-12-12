@@ -4,6 +4,7 @@ import br.com.ifrn.EvaluationsService.evaluations_service.dto.ImporterDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.mapper.StudentPerformanceMapper;
+import br.com.ifrn.EvaluationsService.evaluations_service.messaging.dto.ConsumerMessageDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.models.StudentPerformance;
 import br.com.ifrn.EvaluationsService.evaluations_service.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,9 +44,10 @@ public class StudentPerformanceService {
         return null;
     }
 
-    public ResponseStudentPerformanceDTO createStudentPerformanceByImporterDTO(ImporterDTO  importerDTO) {
+    public ResponseStudentPerformanceDTO createStudentPerformanceByConsumerMessageDTO(ConsumerMessageDTO consumerMessageDTO) {
         //estrutura inicial sem qualquer validação e com dados mockcados
-        StudentPerformance studentPerformance = mapper.toEntityByImporterDto(importerDTO);
+        StudentPerformance studentPerformance = mapper.toEntityByConsumerMessageDto(consumerMessageDTO);
+        studentPerformance.setStudentId(consumerMessageDTO.getUserId());
         studentPerformance = studentPerformanceRepository.save(studentPerformance);
         ResponseStudentPerformanceDTO responseDto = mapper.toResponseDto(studentPerformance);
         return responseDto;

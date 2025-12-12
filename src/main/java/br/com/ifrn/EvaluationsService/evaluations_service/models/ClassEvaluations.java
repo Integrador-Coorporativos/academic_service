@@ -18,7 +18,8 @@ public class ClassEvaluations {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer classId;
+
+    private String classId;
     private Integer professorId;
     private LocalDate date;
 

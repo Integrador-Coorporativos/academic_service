@@ -54,7 +54,7 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
-    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, Integer classId, Integer professorId) {
+    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, String classId, Integer professorId) {
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
         ClassEvaluations classEvaluations = new  ClassEvaluations();
         classEvaluations.setClassId(classId);//precisa adicionar validação de existencia de turma

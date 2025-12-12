@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter @Setter
 public class ResponseClassEvaluationsDTO {
     private Integer id;
-    private Integer classId;
+    private String classId;
     private Integer professorId;
     private LocalDate date;
     private float averageScore;

@@ -1,9 +1,6 @@
 package br.com.ifrn.EvaluationsService.evaluations_service.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +17,9 @@ public class StudentPerformance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer studentId;
-    private Integer classId;
+    @Column(unique = true)
+    private String studentId;
+    private String classId;
 
     private float averageScore;
     private float attendenceRate;

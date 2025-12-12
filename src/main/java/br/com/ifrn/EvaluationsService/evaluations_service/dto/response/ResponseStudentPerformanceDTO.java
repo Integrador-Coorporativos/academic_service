@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter @Setter
 public class ResponseStudentPerformanceDTO {
     private Integer id;
-    private Integer studentId;
-    private Integer classId;
+    private String studentId;
+    private String classId;
     private float averageScore;
     private float attendenceRate;
     private Integer failedSubjects;

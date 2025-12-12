@@ -62,7 +62,6 @@ public class XlsxImporter implements FileImporter {
         importerDTO.setAverage(parseFloat(row, 7));     // Média_Geral
         importerDTO.setIra(parseFloat(row, 8));         // IRA
         importerDTO.setRejections(parseInt(row, 9));    // Reprovações
-
         return importerDTO;
     }
 

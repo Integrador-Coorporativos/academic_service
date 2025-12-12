@@ -33,7 +33,7 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
     }
 
     @PostMapping
-    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, @RequestParam Integer classId, @RequestParam Integer professorId) {
+    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, @RequestParam String classId, @RequestParam Integer professorId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(classEvaluationsService.createEvaluation(dto,  classId, professorId));
     }
 
