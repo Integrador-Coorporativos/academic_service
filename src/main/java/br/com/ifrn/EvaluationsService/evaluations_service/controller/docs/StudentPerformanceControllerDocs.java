@@ -69,7 +69,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(
-            @PathVariable String id,
-            @RequestBody ResponseStudentPerformanceDTO dto
+            @PathVariable Integer id,
+            @RequestBody RequestStudentPerformanceDTO dto
     );
 }

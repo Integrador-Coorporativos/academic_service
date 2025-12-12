@@ -2,12 +2,15 @@ package br.com.ifrn.EvaluationsService.evaluations_service.mapper;
 
 
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.ImporterDTO;
+import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.EvaluationsService.evaluations_service.messaging.dto.ConsumerMessageDTO;
+import br.com.ifrn.EvaluationsService.evaluations_service.models.ClassEvaluations;
 import br.com.ifrn.EvaluationsService.evaluations_service.models.StudentPerformance;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -22,11 +25,19 @@ public interface StudentPerformanceMapper {
     ResponseStudentPerformanceDTO toResponseDto (StudentPerformance entity);
 
 
-    @Mapping(source = "rejections", target = "failedSubjects")
+    @Mapping(source = "rejections", target = "failedSubjects", defaultValue = "0")
     @Mapping(source = "classId", target = "classId")
     @Mapping(source = "userId", target = "studentId")
     @Mapping(source = "average", target = "averageScore")
     @Mapping(source = "presence", target = "attendenceRate")
     @Mapping(source = "ira", target = "ira")
-    StudentPerformance toEntityByConsumerMessageDto (ConsumerMessageDTO dto);
+    RequestStudentPerformanceDTO toRequestStudentPerformanceByConsumerMessageDto (ConsumerMessageDTO dto);
+
+    @Mapping(source = "failedSubjects", target = "failedSubjects")
+    @Mapping(source = "averageScore", target = "averageScore")
+    @Mapping(source = "attendenceRate", target = "attendenceRate")
+    @Mapping(source = "ira", target = "ira")
+    @Mapping(source = "classId", target = "classId")
+    void updateEntityFromDto(RequestStudentPerformanceDTO dto,
+                             @MappingTarget StudentPerformance entity);
 }

@@ -6,11 +6,11 @@ import lombok.Setter;
 
 @Getter @Setter
 public class RequestStudentPerformanceDTO {
-    private Integer studentId;
+    private String studentId;
     private String classId;
     private float averageScore;
     private float attendenceRate;
     private Integer failedSubjects;
     private String status;
-
+    private float ira;
 }

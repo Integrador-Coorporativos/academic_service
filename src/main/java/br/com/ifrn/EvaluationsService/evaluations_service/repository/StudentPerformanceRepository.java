@@ -4,4 +4,5 @@ import br.com.ifrn.EvaluationsService.evaluations_service.models.StudentPerforma
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StudentPerformanceRepository extends JpaRepository<StudentPerformance, Integer> {
+    StudentPerformance findStudentPerformanceByStudentId(String studentId);
 }

@@ -17,6 +17,6 @@ public class MessagingReceiveService {
         ResponseImporterDTO responseImporterDTO = new ResponseImporterDTO();
         responseImporterDTO.setStudentPerformance(studentPerformanceDTO);
 
-        System.out.println("Performance do Estudante Registrada: " + studentPerformanceDTO);
+        System.out.println("Performance do Estudante Registrada: \n" + studentPerformanceDTO.getClassId() +"\n" + studentPerformanceDTO.getFailedSubjects());
     }
 }

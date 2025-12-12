@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/performance")
 public class StudentPerformanceController implements StudentPerformanceControllerDocs {
@@ -21,6 +23,10 @@ public class StudentPerformanceController implements StudentPerformanceControlle
     public ResponseEntity<ResponseStudentPerformanceDTO> getStudentPerformanceById(@PathVariable Integer id) {
         return ResponseEntity.ok().body(studentPerformanceService.getStudentPerformanceById(id));
     }
+    @GetMapping("/student/all")
+    public ResponseEntity<List<ResponseStudentPerformanceDTO>> getAllStudentPerformance() {
+        return ResponseEntity.ok().body(studentPerformanceService.getAllStudentPerformance());
+    }
     @GetMapping("/class/{id}")
     public ResponseEntity<ResponseClassEvaluationsDTO> getClassEvaluationsById(@PathVariable String id) {
         return ResponseEntity.ok().body(new ResponseClassEvaluationsDTO());
@@ -30,7 +36,7 @@ public class StudentPerformanceController implements StudentPerformanceControlle
         return ResponseEntity.status(HttpStatus.CREATED).body(studentPerformanceService.createStudentPerformance(performanceDTO));
     }
     @PutMapping("/class/{id}")
-    public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(@PathVariable String id, @RequestBody ResponseStudentPerformanceDTO dto) {
-        return ResponseEntity.ok().body(new ResponseStudentPerformanceDTO());
+    public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(@PathVariable Integer id, @RequestBody RequestStudentPerformanceDTO dto) {
+        return ResponseEntity.ok().body(studentPerformanceService.updateStudentPerformance(id, dto));
     }
 }
