@@ -42,7 +42,9 @@ public class OpenApiConfig {
                 .tags(List.of(
                         new Tag().name("Avaliações").description("Endpoints de gerenciamento de avaliações de turma"),
                         new Tag().name("Desempenho").description("Operações relacionadas a Desempenho"),
-                        new Tag().name("Processamento de Planilhas").description("Operações relacionadas a mportação e Processamento de Dados dos Alunos, Cursos e Turmas")
+                        new Tag().name("Classes").description("Operações relacionadas a Turmas"),
+                        new Tag().name("Courses").description("Operações relacionadas a Cursos"),
+                        new Tag().name("Comments").description("Operações relacionadas a Comentários")
                 ))
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")

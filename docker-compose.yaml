@@ -34,8 +34,8 @@ services:
       KEYCLOAK_REALM: ifrn
 
       MINIO_SERVER_URL: "http://minio:9000"
-      MINIO_ADMIN_USER: admin
-      MINIO_ADMIN_PASSWORD: admin123
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
       BUCKET_FILES_NAME: files
       BUCKET_IMAGES_NAME: images
 
