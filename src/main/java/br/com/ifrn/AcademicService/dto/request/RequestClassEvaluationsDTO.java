@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Range;
 
 
 @Getter @Setter
-public class RequestClassEvaluationsDTO {
+public class RequestClassEvaluationsDTO  {
 
     @Range(min = 0, max = 5)
     private float frequencyScore; //frequencia

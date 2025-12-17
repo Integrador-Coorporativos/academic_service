@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService;
 
+import br.com.ifrn.AcademicService.config.redis.RedisPropertiesConfig;
 import br.com.ifrn.AcademicService.file.objectstorage.MinioPropertiesConfig;
 import br.com.ifrn.AcademicService.keycloak.KeycloakPropertiesConfig;
 import org.springframework.boot.SpringApplication;
@@ -8,7 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @EnableConfigurationProperties({
         KeycloakPropertiesConfig.class,
-        MinioPropertiesConfig.class
+        MinioPropertiesConfig.class,
+        RedisPropertiesConfig.class
 })
 @SpringBootApplication
 public class AcademicServiceApplication {

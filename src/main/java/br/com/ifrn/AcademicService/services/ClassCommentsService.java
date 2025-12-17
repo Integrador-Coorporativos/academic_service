@@ -4,10 +4,11 @@ import br.com.ifrn.AcademicService.models.ClassComments;
 import br.com.ifrn.AcademicService.repository.ClassCommentsRepository;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 @Service
@@ -18,12 +19,12 @@ public class ClassCommentsService {
     @Autowired
     private ClassesRepository classesRepository;
 
+    @Cacheable(value = "commentsCache", key = "#turmaId")
     public List<ClassComments> getByTurma(Integer turmaId) {
-        return commentRepository.findAll().stream()
-                .filter(c -> c.getClasse().getId() == turmaId)
-                .toList();
+        return commentRepository.findByClasseId(turmaId);
     }
 
+    @CacheEvict(value = "commentsCache", allEntries = true)
     public ClassComments create(ClassComments comment) {
         if (comment.getComment() == null) {
             throw new IllegalArgumentException("Comentário não pode ser nulo");
@@ -40,6 +41,7 @@ public class ClassCommentsService {
         return commentRepository.save(comment);
     }
 
+    @CacheEvict(value = "commentsCache", allEntries = true)
     public ClassComments update(ClassComments comment) {
         ClassComments classComment = commentRepository.findById(comment.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ccomentário não encontrado!"));
@@ -48,6 +50,7 @@ public class ClassCommentsService {
         return commentRepository.save(classComment);
     }
 
+    @CacheEvict(value = "commentsCache", allEntries = true)
     public void delete(Integer id) {
         commentRepository.deleteById(id); }
 }
