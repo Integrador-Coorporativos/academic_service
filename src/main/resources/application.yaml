@@ -31,6 +31,9 @@ spring:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
 
+  cache:
+    type: redis
+
 # Configuração do Swagger/OpenAPI
 springdoc:
   swagger-ui:
@@ -66,3 +69,6 @@ minio:
   admin-password: ${MINIO_ROOT_PASSWORD}
   bucket-files: ${BUCKET_FILES_NAME}
   bucket-images: ${BUCKET_IMAGES_NAME}
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}

@@ -8,6 +8,8 @@ import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,7 @@ public class StudentPerformanceService {
     @Autowired
     StudentPerformanceMapper mapper;
 
+    @Cacheable(value = "studentPerformanceCache", key = "#id")
     public ResponseStudentPerformanceDTO getStudentPerformanceById(Integer id) throws EntityNotFoundException {
 
         StudentPerformance studentPerformance = studentPerformanceRepository.findById(id)
@@ -29,6 +32,7 @@ public class StudentPerformanceService {
         return dto;
     }
 
+    @CacheEvict(value = "studentPerformanceCacheAll", allEntries = true)
     public ResponseStudentPerformanceDTO createStudentPerformance(RequestStudentPerformanceDTO requestDTO) {
         StudentPerformance studentPerformance = mapper.toEntity(requestDTO);
         studentPerformance = studentPerformanceRepository.save(studentPerformance);
@@ -36,6 +40,7 @@ public class StudentPerformanceService {
         return responseDto;
     }
 
+    @CacheEvict(value = {"studentPerformanceCache", "studentPerformanceCacheAll"}, allEntries = true)
     public ResponseStudentPerformanceDTO updateStudentPerformance(Integer id, RequestStudentPerformanceDTO dto) {
         StudentPerformance studentPerformance = studentPerformanceRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Not found Student Performance by Id: " + id));
@@ -49,6 +54,7 @@ public class StudentPerformanceService {
         return null;
     }
 
+    @CacheEvict(value = "studentPerformanceCacheAll", allEntries = true)
     public ResponseStudentPerformanceDTO createStudentPerformanceByConsumerMessageDTO(ImportMessageDTO consumerMessageDTO) {
         //estrutura inicial
         ResponseStudentPerformanceDTO responseDto =  new ResponseStudentPerformanceDTO();
@@ -62,6 +68,7 @@ public class StudentPerformanceService {
         return responseDto;
     }
 
+    @Cacheable(value = "studentPerformanceCacheAll")
     public List<ResponseStudentPerformanceDTO> getAllStudentPerformance() {
         List<StudentPerformance> studentPerformanceList = studentPerformanceRepository.findAll();
         return studentPerformanceList.stream()

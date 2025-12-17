@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter
-public class RequestClassDTO {
+public class RequestClassDTO implements Serializable {
 
     @NotNull
     @Size(min = 1, max = 100)
