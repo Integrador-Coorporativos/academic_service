@@ -5,14 +5,17 @@ server:
     include-binding-errors: always
 
 spring:
+  config:
+    import: "optional:dotenv:.env"
+
   application:
-    name: ClassService
+    name: Academic Service
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/evaluationsdb
-    username: user
-    password: pass
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     hibernate:
@@ -21,6 +24,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 # Configuração do Swagger/OpenAPI
 springdoc:
@@ -44,3 +53,16 @@ management:
     health:
       show-details: always
 
+keycloak:
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  server-url: ${KEYCLOAK_SERVER_URL}
+  admin-user: ${KEYCLOAK_ADMIN_USER}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+  realm: ${KEYCLOAK_REALM}
+
+minio:
+  server-url: ${MINIO_SERVER_URL}
+  admin-user: ${MINIO_ROOT_USER}
+  admin-password: ${MINIO_ROOT_PASSWORD}
+  bucket-files: ${BUCKET_FILES_NAME}
+  bucket-images: ${BUCKET_IMAGES_NAME}
