@@ -6,10 +6,11 @@ import br.com.ifrn.AcademicService.models.Courses;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter @Setter
-public class ResponseClassDTO {
+public class ResponseClassDTO implements Serializable {
     private int id;
     private String name;
     private String semester;

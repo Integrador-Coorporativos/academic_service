@@ -4,11 +4,12 @@ import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 
 @Getter @Setter
-public class ResponseClassEvaluationsDTO {
+public class ResponseClassEvaluationsDTO implements Serializable {
     private Integer id;
     private String classId;
     private Integer professorId;
