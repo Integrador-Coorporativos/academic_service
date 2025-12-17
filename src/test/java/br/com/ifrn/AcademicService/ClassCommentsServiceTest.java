@@ -144,4 +144,29 @@ class ClassCommentsServiceTest {
 
         assertEquals("Professor ID deve ser maior que zero", exception.getMessage());
     }
+
+    // ==============================
+    // TESTES ESTRUTURAIS
+    // ==============================
+
+    @Test
+    void testGetByTurmaWhenRepositoryIsEmpty() {
+        when(commentsRepository.findAll()).thenReturn(List.of());
+
+        List<ClassComments> result = commentService.getByTurma(1);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testCreateShouldNotCallSaveWhenCommentIsInvalid() {
+        comment.setComment(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentService.create(comment);
+        });
+
+        verify(commentsRepository, never()).save(any());
+    }
 }

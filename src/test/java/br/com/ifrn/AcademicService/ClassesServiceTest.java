@@ -126,4 +126,29 @@ class ClassesServiceTest {
         });
         assertEquals("Nome da turma não pode exceder 255 caracteres", exception.getMessage());
     }
+
+
+    // ==============================
+    // TESTES ESTRUTURAIS
+    // ==============================
+
+    @Test
+    void testUpdateWhenClassDoesNotExist() {
+        when(classesRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            classesService.update(1, turma);
+        });
+    }
+
+    @Test
+    void testDeleteWhenClassDoesNotExist() {
+        when(classesRepository.existsById(1)).thenReturn(false);
+
+        assertDoesNotThrow(() -> {
+            classesService.delete(1);
+        });
+
+        verify(classesRepository).deleteById(1);
+    }
 }

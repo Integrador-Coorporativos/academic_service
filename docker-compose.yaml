@@ -4,8 +4,8 @@ services:
     container_name: evaluations-db
     environment:
       POSTGRES_DB: evaluationsdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
     ports:
       - "5434:5432"
     volumes:
@@ -24,8 +24,8 @@ services:
     environment:
 
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/evaluationsdb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: pass
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
       KEYCLOAK_CLIENT_SECRET: mzjROuTev2gNJsHrSVyeNU4KF5Lgtgfe
 
       KEYCLOAK_SERVER_URL: "http://keycloak:8080"

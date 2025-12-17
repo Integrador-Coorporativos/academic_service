@@ -136,4 +136,28 @@ class CoursesServiceTest {
         assertEquals("Descrição do curso não pode exceder 500 caracteres", exception.getMessage());
     }
 
+    // ==============================
+    // TESTES ESTRUTURAIS
+    // ==============================
+
+    @Test
+    void testUpdateWhenCourseDoesNotExist() {
+        when(coursesRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            coursesService.update(1, course);
+        });
+    }
+
+    @Test
+    void testCreateInvalidCourseShouldNotCallSave() {
+        course.setName(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            coursesService.create(course);
+        });
+
+        verify(coursesRepository, never()).save(any());
+    }
+
 }
