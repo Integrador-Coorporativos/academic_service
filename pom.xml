@@ -11,8 +11,8 @@
         <relativePath/>
     </parent>
 
-    <groupId>br.com.ifrn.EvaluationsService</groupId>
-    <artifactId>evaluations-service</artifactId>
+    <groupId>br.com.ifrn</groupId>
+    <artifactId>AcademicService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
@@ -93,6 +93,23 @@
             <version>4.12.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+            <version>25.0.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
 
         <!-- TESTES -->
         <dependency>

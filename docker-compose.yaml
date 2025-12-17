@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -22,9 +22,28 @@ services:
       - postgres
 
     environment:
+
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/evaluationsdb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
+      KEYCLOAK_CLIENT_SECRET: mzjROuTev2gNJsHrSVyeNU4KF5Lgtgfe
+
+      KEYCLOAK_SERVER_URL: "http://keycloak:8080"
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KEYCLOAK_REALM: ifrn
+
+      MINIO_SERVER_URL: "http://minio:9000"
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+      BUCKET_FILES_NAME: files
+      BUCKET_IMAGES_NAME: images
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin123
+
     ports:
       - "8080:8080"
     networks:
