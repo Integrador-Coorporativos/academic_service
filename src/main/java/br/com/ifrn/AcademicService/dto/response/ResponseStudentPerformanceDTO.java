@@ -3,8 +3,10 @@ package br.com.ifrn.AcademicService.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter
-public class ResponseStudentPerformanceDTO {
+public class ResponseStudentPerformanceDTO implements Serializable {
     private Integer id;
     private String studentId;
     private String classId;

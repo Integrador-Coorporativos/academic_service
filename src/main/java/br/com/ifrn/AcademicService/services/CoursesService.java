@@ -3,6 +3,8 @@ package br.com.ifrn.AcademicService.services;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +15,16 @@ public class CoursesService {
     @Autowired
     private CoursesRepository coursesRepository;
 
-
-
-
+    @Cacheable(value = "coursesCacheAll")
     public List<Courses> getAll() { return coursesRepository.findAll(); }
-    public Optional<Courses> getById(Integer id) { return coursesRepository.findById(id); }
+
+    @Cacheable(value = "coursesCache", key = "#id")
+
+
+    public Optional<Courses> getById(Integer id) {
+        return coursesRepository.findById(id); }
+
+    @CacheEvict(value = "coursesCacheAll", allEntries = true)
     public Courses create(Courses course) {
         if (course.getName() == null) {
             throw new IllegalArgumentException("Nome do curso não pode ser nulo");
@@ -34,6 +41,7 @@ public class CoursesService {
         return coursesRepository.save(course);
     }
 
+    @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
     public Courses update(Integer id, Courses courseDetails) {
         if (courseDetails.getName() == null) {
             throw new IllegalArgumentException("Nome do curso não pode ser nulo");
@@ -49,19 +57,23 @@ public class CoursesService {
         course.setDescription(courseDetails.getDescription());
         return coursesRepository.save(course);
     }
+
+    @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
     public boolean delete(Integer id) { coursesRepository.deleteById(id);
         return false;
     }
 
+    @CacheEvict(value = "coursesCacheAll", allEntries = true)
     public Courses findOrCreateByName(String name) {
         Courses course = coursesRepository.findByName(name);
         if (course == null) {
-            course = new Courses();          // ← você esqueceu isso
+            course = new Courses();
             course.setName(name);
             course = coursesRepository.save(course);
         }
         return course;
     }
+
 
 
 }

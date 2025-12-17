@@ -7,6 +7,8 @@ import br.com.ifrn.AcademicService.models.ClassEvaluations;
 import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +24,7 @@ public class ClassEvaluationsService {
     @Autowired
     EvaluationsMapper evaluationsMapper;
 
+    @Cacheable(value = "evaluationsCacheAll")
     public List<ResponseClassEvaluationsDTO> getAllEvaluations() {
 
         List<ClassEvaluations> classEvaluations = classEvaluationsRepository.findAll();
@@ -34,6 +37,7 @@ public class ClassEvaluationsService {
 
     }
 
+    @Cacheable(value = "evaluationsCache", key = "#id")
     public ResponseClassEvaluationsDTO getEvaluationById(Integer id) {
         ClassEvaluations classEvaluations = classEvaluationsRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Evaluation not found"));
@@ -44,6 +48,7 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
+    @Cacheable(value = "evaluationsCacheByClass", key = "#id")
     public List<ResponseClassEvaluationsDTO> getEvaluationsByClassId(Integer id) {
         List<ClassEvaluations> classEvaluations = classEvaluationsRepository.findByClassId(id);
         List<ResponseClassEvaluationsDTO> responseDTO = classEvaluations
@@ -53,6 +58,7 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCacheByClass"}, key = "#classId")
     public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, String classId, Integer professorId) {
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
         ClassEvaluations classEvaluations = new  ClassEvaluations();
@@ -65,6 +71,7 @@ public class ClassEvaluationsService {
         return evaluationsMapper.toResponseClassEvaluationsDTO(classEvaluations);
     }
 
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#entity.classId")
     public ResponseClassEvaluationsDTO updateEvaluation(Integer id, RequestClassEvaluationsDTO dto) {
         ClassEvaluations entity = classEvaluationsRepository.findById(id)
                 .orElseThrow(()-> new NoSuchElementException("ClassEvaluations not found with id: " + id));
@@ -76,6 +83,7 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#classId")
     public void deleteEvaluation(Integer id) {
         if (!classEvaluationsRepository.existsById(id)){
             throw new NoSuchElementException("ClassEvaluations not found with id: " + id);

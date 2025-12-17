@@ -4,6 +4,8 @@ package br.com.ifrn.AcademicService.services;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import br.com.ifrn.AcademicService.models.Classes;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,13 @@ public class ClassesService {
     @Autowired
     CoursesService coursesService;
 
+    @Cacheable(value = "classesCacheAll")
     public List<Classes> getAll() { return classesRepository.findAll(); }
+
+    @Cacheable(value = "classesCache", key = "#id")
     public Optional<Classes> getById(Integer id) { return classesRepository.findById(id); }
+
+    @CacheEvict(value = "classesCacheAll", allEntries = true)
     public Classes create(Classes turma) {
 
         if (turma.getName() == null) {
@@ -39,6 +46,7 @@ public class ClassesService {
 
         return classesRepository.save(turma); }
 
+    @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
     public Classes update(Integer id, Classes turmaDetails) {
         Classes turma = classesRepository.findById(id).orElseThrow();
@@ -46,6 +54,8 @@ public class ClassesService {
         turma.setCourse(turmaDetails.getCourse());
         return classesRepository.save(turma);
     }
+
+    @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     public boolean delete(Integer id) { classesRepository.deleteById(id);
         return false;
     }
@@ -88,6 +98,7 @@ public class ClassesService {
      *
      * @throws IllegalArgumentException if {@code classId} is {@code null}.
      */
+    @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
     public Classes createOrUpdateClassByClassId(
             String courseName, String semester, Integer gradleLevel,
