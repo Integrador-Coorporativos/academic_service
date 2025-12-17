@@ -9,7 +9,7 @@ spring:
     import: "optional:dotenv:.env"
 
   application:
-    name: ClassService
+    name: Academic Service
 
   datasource:
     driver-class-name: org.postgresql.Driver

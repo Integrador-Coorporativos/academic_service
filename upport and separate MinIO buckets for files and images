@@ -16,10 +16,10 @@
 [1mindex 65f533a..732ef5b 100644[m
 [1m--- a/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/controller/ProcessingController.java[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/controller/ProcessingController.java[m
-[36m@@ -4,6 +4,7 @@[m [mimport br.com.ifrn.EvaluationsService.evaluations_service.controller.docs.Proces[m
- import br.com.ifrn.EvaluationsService.evaluations_service.dto.ImporterDTO;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.dto.ResponseImporterDTO;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.services.ProcessingService;[m
+[36m@@ -4,6 +4,7 @@[m [mimport br.com.ifrn.AcademicService.evaluations_service.controller.docs.Proces[m
+ import dto.br.com.ifrn.AcademicService.ImporterDTO;[m
+ import dto.br.com.ifrn.AcademicService.ResponseImporterDTO;[m
+ import br.com.ifrn.AcademicService.evaluations_service.services.ProcessingService;[m
 [32m+[m[32mimport io.minio.ObjectWriteResponse;[m
  import lombok.SneakyThrows;[m
  import org.springframework.beans.factory.annotation.Autowired;[m
@@ -67,7 +67,7 @@
 [1m--- /dev/null[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/ContentTypes.java[m
 [36m@@ -0,0 +1,6 @@[m
-[32m+[m[32mpackage br.com.ifrn.EvaluationsService.evaluations_service.file;[m
+[32m+[m[32mpackage br.com.ifrn.AcademicService.evaluations_service.file;[m
 [32m+[m
 [32m+[m[32mpublic final class ContentTypes {[m
 [32m+[m[32m    private ContentTypes() {} // evita instanciação[m
@@ -77,12 +77,12 @@
 [1mindex bf0e25a..313ade1 100644[m
 [1m--- a/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/importer/factory/FileImporterFactory.java[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/importer/factory/FileImporterFactory.java[m
-[36m@@ -2,6 +2,7 @@[m [mpackage br.com.ifrn.EvaluationsService.evaluations_service.file.importer.factory[m
+[36m@@ -2,6 +2,7 @@[m [mpackage br.com.ifrn.AcademicService.evaluations_service.file.importer.factory[m
  [m
- import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract.FileImporter;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.impl.CsvImporter;[m
-[32m+[m[32mimport br.com.ifrn.EvaluationsService.evaluations_service.file.importer.impl.PngOrJpegImporter;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.impl.XlsxImporter;[m
+ import contract.importer.file.br.com.ifrn.AcademicService.FileImporter;[m
+ import impl.importer.file.br.com.ifrn.AcademicService.CsvImporter;[m
+[32m+[m[32mimport impl.importer.file.br.com.ifrn.AcademicService.PngOrJpegImporter;[m
+ import impl.importer.file.br.com.ifrn.AcademicService.XlsxImporter;[m
  import org.apache.coyote.BadRequestException;[m
  import org.slf4j.Logger;[m
 [36m@@ -23,7 +24,9 @@[m [mpublic class FileImporterFactory {[m
@@ -102,10 +102,10 @@
 [1m--- /dev/null[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/importer/impl/PngOrJpegImporter.java[m
 [36m@@ -0,0 +1,14 @@[m
-[32m+[m[32mpackage br.com.ifrn.EvaluationsService.evaluations_service.file.importer.impl;[m
+[32m+[m[32mpackage br.com.ifrn.AcademicService.evaluations_service.file.importer.impl;[m
 [32m+[m
-[32m+[m[32mimport br.com.ifrn.EvaluationsService.evaluations_service.dto.ImporterDTO;[m
-[32m+[m[32mimport br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract.FileImporter;[m
+[32m+[m[32mimport dto.br.com.ifrn.AcademicService.ImporterDTO;[m
+[32m+[m[32mimport contract.importer.file.br.com.ifrn.AcademicService.FileImporter;[m
 [32m+[m
 [32m+[m[32mimport java.io.InputStream;[m
 [32m+[m[32mimport java.util.List;[m
@@ -121,9 +121,9 @@
 [1m--- a/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/objectstorage/MinioClientConfig.java[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/file/objectstorage/MinioClientConfig.java[m
 [36m@@ -1,5 +1,6 @@[m
- package br.com.ifrn.EvaluationsService.evaluations_service.file.objectstorage;[m
+ package br.com.ifrn.AcademicService.evaluations_service.file.objectstorage;[m
  [m
-[32m+[m[32mimport br.com.ifrn.EvaluationsService.evaluations_service.file.ContentTypes;[m
+[32m+[m[32mimport file.br.com.ifrn.AcademicService.ContentTypes;[m
  import io.minio.MinioClient;[m
  import io.minio.ObjectWriteResponse;[m
  import io.minio.PutObjectArgs;[m
@@ -187,10 +187,10 @@
 [1mindex 5d03314..958c4e0 100644[m
 [1m--- a/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/services/ProcessingService.java[m
 [1m+++ b/src/main/java/br/com/ifrn/EvaluationsService/evaluations_service/services/ProcessingService.java[m
-[36m@@ -7,7 +7,9 @@[m [mimport br.com.ifrn.EvaluationsService.evaluations_service.file.importer.contract[m
- import br.com.ifrn.EvaluationsService.evaluations_service.file.importer.factory.FileImporterFactory;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.file.objectstorage.MinioClientConfig;[m
- import br.com.ifrn.EvaluationsService.evaluations_service.keycloak.KeycloakAdminConfig;[m
+[36m@@ -7,7 +7,9 @@[m [mimport br.com.ifrn.AcademicService.evaluations_service.file.importer.contract[m
+ import factory.importer.file.br.com.ifrn.AcademicService.FileImporterFactory;[m
+ import objectstorage.file.br.com.ifrn.AcademicService.MinioClientConfig;[m
+ import keycloak.br.com.ifrn.AcademicService.KeycloakAdminConfig;[m
 [32m+[m[32mimport io.minio.ObjectWriteResponse;[m
  import jakarta.ws.rs.core.Response;[m
 [32m+[m[32mimport lombok.SneakyThrows;[m
