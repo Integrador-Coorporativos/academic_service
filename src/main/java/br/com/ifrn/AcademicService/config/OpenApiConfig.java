@@ -19,11 +19,10 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("SADT - Evaluations Service")
+                        .title("SADT - Academic Service")
                         .version("1.0.0")
                         .description("""
-                            Serviço responsável por gerenciar avaliações de turmas, desempenho de alunos e importação de planilhas contendo dados acadêmicos. 
-                            Faz parte de uma arquitetura modular e integra-se a outros serviços educacionais.
+                            Serviço responsável por gerenciar avaliações de turmas, desempenho de alunos, Turmas, Cursos e Comentários, contendo todos os dados acadêmicos necessários. 
                             
                             """)
                         .contact(new Contact()

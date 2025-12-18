@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 class ClassCommentsServiceTest {
 
     @Mock
@@ -58,8 +58,8 @@ class ClassCommentsServiceTest {
 
     @Test
     void testGetByTurma() {
-        // Mocka o método findAll que é utilizado no serviço
-        when(commentsRepository.findAll()).thenReturn(List.of(comment));
+        when(commentsRepository.findByClasseId(1))
+                .thenReturn(List.of(comment));
 
         List<ClassComments> list = commentService.getByTurma(1);
 
@@ -68,10 +68,11 @@ class ClassCommentsServiceTest {
         assertEquals("Excelente participação", list.get(0).getComment());
         assertEquals(10, list.get(0).getProfessorId());
         assertEquals("Turma A", list.get(0).getClasse().getName());
-        verify(commentsRepository, times(1)).findAll();
+
+        verify(commentsRepository, times(1)).findByClasseId(1);
     }
 
-    // ==============================
+// ==============================
 // Testes de Valor Limite
 // ==============================
 

@@ -2,9 +2,9 @@ name: Testes e Relatórios
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   build-and-test:
@@ -31,13 +31,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Rodar testes
-        run: ./mvnw clean test
+
+      - name: Build, testes e coverage
+        run: ./mvnw clean verify
 
       - name: Gerar relatório Surefire HTML
         run: ./mvnw surefire-report:report
 
-      - name: Publicar relatórios como artefatos
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
+      - name: Upload relatórios de teste
         uses: actions/upload-artifact@v4
         with:
           name: relatorios-de-teste
