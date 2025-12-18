@@ -10,9 +10,12 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 import br.com.ifrn.AcademicService.models.Classes;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 class ClassesServiceTest {
 
     @Mock
