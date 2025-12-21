@@ -2,7 +2,7 @@ name: Testes e Relatórios
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, test/mutation_tests ]
   pull_request:
     branches: [ main, develop ]
 
