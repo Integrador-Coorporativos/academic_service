@@ -41,6 +41,7 @@ public class CoursesService {
         return coursesRepository.save(course);
     }
 
+
     @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
     public Courses update(Integer id, Courses courseDetails) {
         if (courseDetails.getName() == null) {
@@ -53,10 +54,27 @@ public class CoursesService {
             throw new IllegalArgumentException("Nome do curso não pode exceder 255 caracteres");
         }
         Courses course = coursesRepository.findById(id).orElseThrow();
-        course.setName(courseDetails.getName());
+        //course.setName(courseDetails.getName());
         course.setDescription(courseDetails.getDescription());
         return coursesRepository.save(course);
     }
+//original
+    //    @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
+    //    public Courses update(Integer id, Courses courseDetails) {
+    //        if (courseDetails.getName() == null) {
+    //            throw new IllegalArgumentException("Nome do curso não pode ser nulo");
+    //        }
+    //        if (courseDetails.getName().isEmpty()) {
+    //            throw new IllegalArgumentException("Nome do curso não pode ser vazio");
+    //        }
+    //        if (courseDetails.getName().length() > 255) {
+    //            throw new IllegalArgumentException("Nome do curso não pode exceder 255 caracteres");
+    //        }
+    //        Courses course = coursesRepository.findById(id).orElseThrow();
+    //        course.setName(courseDetails.getName());
+    //        course.setDescription(courseDetails.getDescription());
+    //        return coursesRepository.save(course);
+    //    }
 
     @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
     public boolean delete(Integer id) { coursesRepository.deleteById(id);

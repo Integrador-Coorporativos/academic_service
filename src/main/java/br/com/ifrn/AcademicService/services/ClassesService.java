@@ -30,21 +30,35 @@ public class ClassesService {
     @Cacheable(value = "classesCache", key = "#id")
     public Optional<Classes> getById(Integer id) { return classesRepository.findById(id); }
 
+
     @CacheEvict(value = "classesCacheAll", allEntries = true)
     public Classes create(Classes turma) {
 
-        if (turma.getName() == null) {
+        if (turma.getName() != null) {
             throw new IllegalArgumentException("Nome da turma não pode ser nulo");
         }
-        if (turma.getName().isEmpty()) {
+        if (!turma.getName().isEmpty()) {
             throw new IllegalArgumentException("Nome da turma não pode ser vazio");
         }
-        if (turma.getName().length() > 255) {
+        if (turma.getName().length() < 255) {
             throw new IllegalArgumentException("Nome da turma não pode exceder 255 caracteres");
         }
-
-
         return classesRepository.save(turma); }
+
+    //original
+//    @CacheEvict(value = "classesCacheAll", allEntries = true)
+//    public Classes create(Classes turma) {
+//
+//        if (turma.getName() == null) {
+//            throw new IllegalArgumentException("Nome da turma não pode ser nulo");
+//        }
+//        if (turma.getName().isEmpty()) {
+//            throw new IllegalArgumentException("Nome da turma não pode ser vazio");
+//        }
+//        if (turma.getName().length() > 255) {
+//            throw new IllegalArgumentException("Nome da turma não pode exceder 255 caracteres");
+//        }
+//        return classesRepository.save(turma); }
 
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional

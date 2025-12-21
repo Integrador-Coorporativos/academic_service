@@ -3,7 +3,9 @@ package br.com.ifrn.AcademicService;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.services.CoursesService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -65,16 +67,31 @@ class CoursesServiceTest{
 
     @Test
     void testUpdate() {
-        Courses updated = new Courses();
-        updated.setName("Informática");
-        updated.setDescription("Curso de Informática");
 
+        Courses updatedInput = new Courses();
+        updatedInput.setName("Informática");
+        updatedInput.setDescription("Curso de Informática");
+
+        // Simulando que o curso existe no banco
         when(coursesRepository.findById(1)).thenReturn(Optional.of(course));
-        when(coursesRepository.save(any(Courses.class))).thenReturn(updated);
 
-        Courses result = coursesService.update(1, updated);
-        assertEquals("Informática", result.getName());
-        assertEquals("Curso de Informática", result.getDescription());
+        // IMPORTANTE: O save agora retorna o que receber, para não viciar o teste
+        when(coursesRepository.save(any(Courses.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // 2. Execução
+        coursesService.update(1, updatedInput);
+
+        // 3. Verificação (A "Fiscalização")
+        ArgumentCaptor<Courses> captor = ArgumentCaptor.forClass(Courses.class);
+
+        // Verifica se o save foi chamado e captura o objeto que foi enviado para ele
+        verify(coursesRepository).save(captor.capture());
+
+        Courses enviadoParaSalvar = captor.getValue();
+
+        // Se você comentar a linha que seta o nome no Service, este assert vai FALHAR:
+        assertEquals("Informática", enviadoParaSalvar.getName(), "O nome deveria ter sido setado no objeto antes de salvar!");
+        assertEquals("Curso de Informática", enviadoParaSalvar.getDescription());
     }
 
     @Test

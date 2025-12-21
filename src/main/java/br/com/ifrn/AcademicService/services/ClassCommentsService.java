@@ -26,20 +26,38 @@ public class ClassCommentsService {
 
     @CacheEvict(value = "commentsCache", allEntries = true)
     public ClassComments create(ClassComments comment) {
-        if (comment.getComment() == null) {
+        if (comment.getComment() != null) {
             throw new IllegalArgumentException("Comentário não pode ser nulo");
         }
         if (comment.getComment().isEmpty()) {
             throw new IllegalArgumentException("Comentário não pode ser vazio");
         }
-        if (comment.getComment().length() > 255) {
+        if (comment.getComment().length() < 255) {
             throw new IllegalArgumentException("Comentário não pode exceder 255 caracteres");
         }
-        if (comment.getProfessorId() <= 0) {
+        if (comment.getProfessorId() >= 0) {
             throw new IllegalArgumentException("Professor ID deve ser maior que zero");
         }
         return commentRepository.save(comment);
     }
+
+    //original
+//    @CacheEvict(value = "commentsCache", allEntries = true)
+//    public ClassComments create(ClassComments comment) {
+//        if (comment.getComment() == null) {
+//            throw new IllegalArgumentException("Comentário não pode ser nulo");
+//        }
+//        if (comment.getComment().isEmpty()) {
+//            throw new IllegalArgumentException("Comentário não pode ser vazio");
+//        }
+//        if (comment.getComment().length() > 255) {
+//            throw new IllegalArgumentException("Comentário não pode exceder 255 caracteres");
+//        }
+//        if (comment.getProfessorId() <= 0) {
+//            throw new IllegalArgumentException("Professor ID deve ser maior que zero");
+//        }
+//        return commentRepository.save(comment);
+//    }
 
     @CacheEvict(value = "commentsCache", allEntries = true)
     public ClassComments update(ClassComments comment) {
