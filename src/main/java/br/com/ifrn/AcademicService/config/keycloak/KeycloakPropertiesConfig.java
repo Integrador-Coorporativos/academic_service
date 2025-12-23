@@ -1,4 +1,4 @@
-package br.com.ifrn.AcademicService.keycloak;
+package br.com.ifrn.AcademicService.config.keycloak;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

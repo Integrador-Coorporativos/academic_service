@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.config;
 
+import br.com.ifrn.AcademicService.config.keycloak.KeycloakPropertiesConfig;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.util.List;
@@ -14,9 +16,13 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    @Autowired
+    KeycloakPropertiesConfig keycloakPropertiesConfig;
+
+    String keycloakLocalServer = "http://localhost:8080";
+
     @Bean
     public OpenAPI customOpenAPI() {
-
         return new OpenAPI()
                 .info(new Info()
                         .title("SADT - Evaluations Service")
@@ -36,7 +42,7 @@ public class OpenApiConfig {
                 )
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8080")
+                                .url("http://localhost:8085")
                                 .description("Servidor Local de Desenvolvimento")
                 ))
                 .tags(List.of(
