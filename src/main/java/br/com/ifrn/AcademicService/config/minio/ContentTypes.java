@@ -1,4 +1,4 @@
-package br.com.ifrn.AcademicService.file;
+package br.com.ifrn.AcademicService.config.minio;
 
 public final class ContentTypes {
     private ContentTypes() {} // evita instanciação

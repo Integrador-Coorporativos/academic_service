@@ -1,4 +1,4 @@
-package br.com.ifrn.AcademicService.file.objectstorage;
+package br.com.ifrn.AcademicService.config.minio;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

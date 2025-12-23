@@ -110,8 +110,3 @@ minio:
 redis:
   host: ${REDIS_HOST}
   port: ${REDIS_PORT}
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
