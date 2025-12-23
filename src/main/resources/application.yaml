@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8085
   error:
     include-message: always
     include-binding-errors: always
@@ -25,6 +25,34 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: academic-service-backend
+            client-secret: NhZI2ZqkycyHPofxWaNNG9bxR1OGCdk8
+            authorization-grant-type: authorization_code
+
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email
+        provider:
+          keycloak:
+            user-name-attribute: preferred_username
+            # URL que o NAVEGADOR vai usar (fora do docker)
+            authorization-uri: http://localhost:8080/realms/ifrn/protocol/openid-connect/auth
+            # URL que o BACKEND vai usar (dentro do docker)
+            token-uri: http://keycloak:8080/realms/ifrn/protocol/openid-connect/token
+            jwk-set-uri: http://keycloak:8080/realms/ifrn/protocol/openid-connect/certs
+
+            #user-info-uri: http://keycloak:8080/realms/ifrn/protocol/openid-connect/userinfo
+            #issuer-uri: http://keycloak:8080/realms/ifrn
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/ifrn/protocol/openid-connect/certs
+
+          #issuer-uri: http://keycloak:8080/realms/ifrn
+
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
@@ -36,10 +64,19 @@ spring:
 
 # Configuração do Swagger/OpenAPI
 springdoc:
+  api-docs:
+    path: /v3/api-docs
   swagger-ui:
     path: /api/docs
     url: /v3/api-docs
-    server-url: http://localhost:8080
+    server-url: http://localhost:8085
+    config-url: /v3/api-docs/swagger-config
+    oauth:
+      client-id: swagger-ui
+      use-pkce-with-authorization-code-grant: true
+      scopes: openid profile email
+      authorization-url: http://localhost:8080/realms/ifrn/protocol/openid-connect/auth
+      token-url: http://localhost:8080/realms/ifrn/protocol/openid-connect/token
   show-actuator: true
 
 # Configuração global de CORS (opcional, mas útil no Swagger)
@@ -62,6 +99,7 @@ keycloak:
   admin-user: ${KEYCLOAK_ADMIN_USER}
   admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
   realm: ${KEYCLOAK_REALM}
+  client-id: ${KEYCLOAK_CLIENT_ID}
 
 minio:
   server-url: ${MINIO_SERVER_URL}

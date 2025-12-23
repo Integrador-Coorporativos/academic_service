@@ -1,6 +1,5 @@
-package br.com.ifrn.AcademicService.file.objectstorage;
+package br.com.ifrn.AcademicService.config.minio;
 
-import br.com.ifrn.AcademicService.file.ContentTypes;
 import io.minio.MinioClient;
 import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;

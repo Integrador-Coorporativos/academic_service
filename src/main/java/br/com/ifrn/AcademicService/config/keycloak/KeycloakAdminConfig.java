@@ -1,4 +1,4 @@
-package br.com.ifrn.AcademicService.keycloak;
+package br.com.ifrn.AcademicService.config.keycloak;
 
 import jakarta.ws.rs.core.Response;
 import org.keycloak.OAuth2Constants;
