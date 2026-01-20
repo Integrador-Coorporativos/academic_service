@@ -19,8 +19,6 @@ public class OpenApiConfig {
     @Autowired
     KeycloakPropertiesConfig keycloakPropertiesConfig;
 
-    String keycloakLocalServer = "http://localhost:8080";
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -31,10 +29,6 @@ public class OpenApiConfig {
                             Serviço responsável por gerenciar avaliações de turmas, desempenho de alunos, Turmas, Cursos e Comentários, contendo todos os dados acadêmicos necessários. 
                             
                             """)
-                        .contact(new Contact()
-                                .name("Eduardo Lima")
-                                .email("ferreira.lima1@escolar.ifrn.edu.br")
-                                .url("https://github.com/eduardoferreiralima"))
                         .license(new License()
                                 .name("MIT License")
                                 .url("https://opensource.org/licenses/MIT"))
@@ -42,7 +36,10 @@ public class OpenApiConfig {
                 .servers(List.of(
                         new Server()
                                 .url("http://localhost:8085")
-                                .description("Servidor Local de Desenvolvimento")
+                                .description("Servidor Local de Desenvolvimento"),
+                        new Server()
+                                .url("https://if-performance-academic-service.zgx7iz.easypanel.host")
+                                .description("Servidor de Produção")
                 ))
                 .tags(List.of(
                         new Tag().name("Avaliações").description("Endpoints de gerenciamento de avaliações de turma"),
@@ -53,6 +50,6 @@ public class OpenApiConfig {
                 ))
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")
-                        .url("https://github.com/Integrador-Coorporativos/evaluations-service"));
+                        .url("https://github.com/Integrador-Coorporativos/academic_service"));
     }
 }

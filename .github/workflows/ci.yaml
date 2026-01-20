@@ -69,3 +69,7 @@ jobs:
           docker build -t $IMAGE_NAME .
           trivy image --exit-code 1 --severity CRITICAL $IMAGE_NAME
           docker push $IMAGE_NAME
+
+      - name: Disparar Deploy no Easypanel
+        run: |
+          curl -X POST "${{ secrets.EASYPANEL_DEPLOY_URL }}"
