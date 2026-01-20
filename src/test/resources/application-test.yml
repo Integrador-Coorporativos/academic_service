@@ -5,6 +5,13 @@ spring:
     username: sa
     password:
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Use um valor fixo para evitar que ele tente buscar na rede durante o teste
+          jwk-set-uri: http://localhost:8081/realms/test/protocol/openid-connect/certs
+          issuer-uri: null
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:

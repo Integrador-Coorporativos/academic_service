@@ -56,7 +56,7 @@ public abstract class BaseIntegrationTest {
         registry.add("minio.access-key", MINIO_CONTAINER::getUserName);
         registry.add("minio.secret-key", MINIO_CONTAINER::getPassword);
 
-        // RabbitMQ (🔥 ISSO RESOLVE SEU ERRO)
+        // RabbitMQ
         registry.add("spring.rabbitmq.host", RABBITMQ_CONTAINER::getHost);
         registry.add("spring.rabbitmq.port", RABBITMQ_CONTAINER::getAmqpPort);
         registry.add("spring.rabbitmq.username", RABBITMQ_CONTAINER::getAdminUsername);

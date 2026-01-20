@@ -23,6 +23,15 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                         authorizeConfig -> {
+                            // LIBERAR SWAGGER E DOCUMENTAÇÃO
+                            authorizeConfig.requestMatchers(
+                                    "/",                       // Raiz para o redirect funcionar
+                                    "/api/docs/**",            // Onde está o seu Swagger UI
+                                    "/api/docs/index.html",    // Caminho direto do Swagger
+                                    "/v3/api-docs/**",         // Onde está o JSON (importante!)
+                                    "/swagger-ui/**",          // Caminhos internos da lib
+                                    "/webjars/**"              // Arquivos CSS/JS do Swagger
+                            ).permitAll();
                             authorizeConfig.requestMatchers("/public").permitAll();
                             authorizeConfig.requestMatchers("/logout").permitAll();
                             authorizeConfig.anyRequest().authenticated();
