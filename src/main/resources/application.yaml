@@ -86,10 +86,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers
+        include: prometheus, health, info, metrics, loggers
   endpoint:
-    health:
-      show-details: always
+    prometheus:
+      enabled: true
 
 keycloak:
   client-secret: ${KEYCLOAK_CLIENT_SECRET}
