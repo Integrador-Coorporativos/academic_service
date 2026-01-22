@@ -1,5 +1,6 @@
 server:
   port: ${SPRING_EXTERNAL_PORT}
+  forward-headers-strategy: framework
   error:
     include-message: always
     include-binding-errors: always
@@ -45,11 +46,11 @@ spring:
             #token-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/token
             #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
             #user-info-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/userinfo
-            issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn
+            issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
       resourceserver:
         jwt:
           #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
-          issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn
+          issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
 
   rabbitmq:
     host: ${RABBITMQ_HOST}
@@ -73,8 +74,8 @@ springdoc:
       client-id: swagger-ui
       use-pkce-with-authorization-code-grant: true
       scopes: openid profile email
-      authorization-url: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/auth
-      token-url: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/token
+      authorization-url: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
+      token-url: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
   show-actuator: true
 
 # Configuração global de CORS (opcional, mas útil no Swagger)
