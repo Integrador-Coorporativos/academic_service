@@ -3,7 +3,7 @@ package br.com.ifrn.AcademicService.config.minio;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "spring.data.minio")
 public record MinioPropertiesConfig(
         String serverUrl,
         String adminUser,

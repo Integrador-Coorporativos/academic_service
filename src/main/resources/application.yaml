@@ -61,6 +61,30 @@ spring:
   cache:
     type: redis
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      username: ${REDIS_USER}
+      connect-timeout: 2000
+
+    keycloak:
+      client-secret: ${KEYCLOAK_CLIENT_SECRET}
+      server-url: ${KEYCLOAK_SERVER_URL}
+      admin-user: ${KEYCLOAK_ADMIN_USER}
+      admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+      realm: ${KEYCLOAK_REALM}
+      client-id: ${KEYCLOAK_CLIENT_ID}
+
+    minio:
+      server-url: ${MINIO_SERVER_URL}
+      admin-user: ${MINIO_ROOT_USER}
+      admin-password: ${MINIO_ROOT_PASSWORD}
+      bucket-files: ${BUCKET_FILES_NAME}
+      bucket-images: ${BUCKET_IMAGES_NAME}
+
+
 # Configuração do Swagger/OpenAPI
 springdoc:
   api-docs:
@@ -91,21 +115,3 @@ management:
   endpoint:
     prometheus:
       enabled: true
-
-keycloak:
-  client-secret: ${KEYCLOAK_CLIENT_SECRET}
-  server-url: ${KEYCLOAK_SERVER_URL}
-  admin-user: ${KEYCLOAK_ADMIN_USER}
-  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
-  realm: ${KEYCLOAK_REALM}
-  client-id: ${KEYCLOAK_CLIENT_ID}
-
-minio:
-  server-url: ${MINIO_SERVER_URL}
-  admin-user: ${MINIO_ROOT_USER}
-  admin-password: ${MINIO_ROOT_PASSWORD}
-  bucket-files: ${BUCKET_FILES_NAME}
-  bucket-images: ${BUCKET_IMAGES_NAME}
-redis:
-  host: ${REDIS_HOST}
-  port: ${REDIS_PORT}
