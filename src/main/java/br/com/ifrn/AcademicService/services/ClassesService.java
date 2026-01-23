@@ -1,15 +1,19 @@
 package br.com.ifrn.AcademicService.services;
 
-
+import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
+import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
+import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.models.Courses;
+import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import br.com.ifrn.AcademicService.models.Classes;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,11 +28,37 @@ public class ClassesService {
     @Autowired
     CoursesService coursesService;
 
+    @Autowired
+    StudentPerformanceService studentPerformanceService;
+
+    @Autowired
+    ClassMapper classsMapper;
+
+    @Autowired
+    KeycloakAdminConfig  keycloakAdminConfig;
+
     @Cacheable(value = "classesCacheAll")
     public List<Classes> getAll() { return classesRepository.findAll(); }
 
     @Cacheable(value = "classesCache", key = "#id")
     public Optional<Classes> getById(Integer id) { return classesRepository.findById(id); }
+
+    @Cacheable(value = "classesCache", key = "#id")
+    public ResponseClassByIdDTO getByClassId(Integer id) {
+        Classes classe = classesRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Classe not found")
+                );
+        List<String> students = classe.getUserId();
+        List<StudentPerformance> classStudents  = new ArrayList<>();
+        students.stream().forEach(student -> {
+            UserRepresentation user = keycloakAdminConfig.findKeycloakUser(student);
+            StudentPerformance studentPerformance = studentPerformanceService.getStudentPerformanceByStudentId(user.getId());
+            classStudents.add(studentPerformance);
+        });
+        ResponseClassByIdDTO responseClassByIdDTO = classsMapper.toResponseClassByDTO(classe);
+        responseClassByIdDTO.setStudents(classStudents);
+        return new ResponseClassByIdDTO();
+    }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
     public Classes create(Classes turma) {

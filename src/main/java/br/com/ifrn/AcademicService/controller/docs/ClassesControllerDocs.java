@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.controller.docs;
 
 import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +37,7 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "200", description = "Turma encontrada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
     })
-    ResponseEntity<Classes> getById(Integer id);
+    ResponseEntity<ResponseClassByIdDTO> getById(Integer id);
 
     @Operation(summary = "Atualiza informações de uma turma existente")
     @ApiResponses(value = {
