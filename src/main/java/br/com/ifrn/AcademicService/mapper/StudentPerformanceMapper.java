@@ -4,6 +4,7 @@ package br.com.ifrn.AcademicService.mapper;
 import br.com.ifrn.AcademicService.dto.ImportMessageDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,6 +21,7 @@ public interface StudentPerformanceMapper {
 
     ResponseStudentPerformanceDTO toResponseDto (StudentPerformance entity);
 
+    StudentDataDTO toStudentDataDTO (StudentPerformance entity);
 
     @Mapping(source = "rejections", target = "failedSubjects", defaultValue = "0")
     @Mapping(source = "classId", target = "classId")

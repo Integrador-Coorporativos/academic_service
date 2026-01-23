@@ -3,7 +3,9 @@ package br.com.ifrn.AcademicService.services;
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
+import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.mapper.ClassMapper;
+import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
@@ -37,6 +39,9 @@ public class ClassesService {
     ClassMapper classsMapper;
 
     @Autowired
+    StudentPerformanceMapper studentPerformanceMapper;
+
+    @Autowired
     KeycloakAdminConfig  keycloakAdminConfig;
 
     @Transactional(readOnly = true)
@@ -57,13 +62,19 @@ public class ClassesService {
         Classes classe = classesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
 
-        List<StudentPerformance> classStudents = new ArrayList<>();
+        List<StudentDataDTO> classStudents = new ArrayList<>();
         for (String studentId : classe.getUserId()) {
             UserRepresentation user = keycloakAdminConfig.findKeycloakUser(studentId);
 
             // CHECK DE SEGURANÇA: Só prossegue se o usuário existir no Keycloak
             if (user != null && user.getId() != null) {
-                StudentPerformance performance = studentPerformanceService.getStudentPerformanceByStudentId(user.getId());
+                StudentDataDTO performance = studentPerformanceMapper.toStudentDataDTO(
+                        studentPerformanceService.getStudentPerformanceByStudentId(user.getId())
+
+                );
+                performance.setName(user.getFirstName());
+                performance.setRegistration(user.getUsername());
+
                 if (performance != null) {
                     classStudents.add(performance);
                 }
