@@ -5,6 +5,7 @@ import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
+import br.com.ifrn.AcademicService.models.enums.Status;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class StudentPerformanceService {
         }
 
         return studentPerformance;
+
     }
 
     @Cacheable(value = "studentPerformanceCache", key = "#id")
@@ -87,6 +89,4 @@ public class StudentPerformanceService {
                 .map(mapper::toResponseDto)
                 .toList();
     }
-
-
 }
