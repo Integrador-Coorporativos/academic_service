@@ -2,9 +2,12 @@ package br.com.ifrn.AcademicService.config.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "redis")
+// Alteramos o prefixo para o padrão do Spring Data Redis
+@ConfigurationProperties(prefix = "spring.data.redis")
 public record RedisPropertiesConfig(
         String host,
-        int port
+        int port,
+        String username,
+        String password
 ) {}
 
