@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/courses")
-public class CoursesController implements CoursesControllerDocs {
-
+public class CoursesController {
+// implements CoursesControllerDocs
     @Autowired
     private CoursesService courseService;
 
@@ -43,11 +43,14 @@ public class CoursesController implements CoursesControllerDocs {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Courses> update(@PathVariable Integer id, @RequestBody Courses course) {
-        Optional<Courses> updatedCourse = Optional.ofNullable(courseService.update(id, course));
-        return updatedCourse.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<Courses> update(@PathVariable Integer id, @RequestBody RequestCourseDTO courseDTO) {
+        Courses course = new Courses();
+        course.setName(courseDTO.getName());
+        course.setDescription(courseDTO.getDescription());
+        Courses updatedCourse = courseService.update(id, course);
+        return ResponseEntity.ok(updatedCourse);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
