@@ -23,6 +23,18 @@ public class StudentPerformanceService {
     @Autowired
     StudentPerformanceMapper mapper;
 
+
+    @Cacheable(value = "studentPerformanceCache", key = "#studentid")
+    public StudentPerformance getStudentPerformanceByStudentId(String studentid) throws EntityNotFoundException {
+
+        StudentPerformance studentPerformance = studentPerformanceRepository.findStudentPerformanceByStudentId(studentid);
+        if(studentPerformance == null){
+            throw new EntityNotFoundException("Student Performance not found");
+        }
+
+        return studentPerformance;
+    }
+
     @Cacheable(value = "studentPerformanceCache", key = "#id")
     public ResponseStudentPerformanceDTO getStudentPerformanceById(Integer id) throws EntityNotFoundException {
 

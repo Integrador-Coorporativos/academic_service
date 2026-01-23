@@ -8,6 +8,8 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class KeycloakAdminConfig {
 
@@ -38,6 +40,20 @@ public class KeycloakAdminConfig {
         Response response = keycloak.realm(envKeycloak.realm()).users().create(user);
         return response;
 
+    }
+
+
+    public UserRepresentation findKeycloakUser(String userId) {
+        Keycloak keycloak = createKeycloakAdminClient(); // cliente admin
+
+        List<UserRepresentation> users = keycloak.realm(envKeycloak.realm())
+                .users()
+                .search(userId);
+        if (users.isEmpty()) {
+            return null;
+        }
+        UserRepresentation user = users.get(0);
+        return user;
     }
 
 }
