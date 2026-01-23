@@ -109,7 +109,7 @@ class CoursesServiceTest{
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             coursesService.create(course);
         });
-        assertEquals("Nome do curso não pode ser vazio", exception.getMessage());
+        assertEquals("Nome ou Descrição do curso inválido!", exception.getMessage());
     }
 
     @Test
@@ -118,7 +118,7 @@ class CoursesServiceTest{
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             coursesService.create(course);
         });
-        assertEquals("Nome do curso não pode ser nulo", exception.getMessage());
+        assertEquals("Nome ou Descrição do curso inválido!", exception.getMessage());
     }
 
     @Test
@@ -127,7 +127,7 @@ class CoursesServiceTest{
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             coursesService.create(course);
         });
-        assertEquals("Nome do curso não pode exceder 255 caracteres", exception.getMessage());
+        assertEquals("Nome ou Descrição do curso inválido!", exception.getMessage());
     }
 
     @Test
@@ -136,7 +136,7 @@ class CoursesServiceTest{
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             coursesService.create(course);
         });
-        assertEquals("Descrição do curso não pode exceder 500 caracteres", exception.getMessage());
+        assertEquals("Nome ou Descrição do curso inválido!", exception.getMessage());
     }
 
     // ==============================

@@ -1,5 +1,7 @@
 package br.com.ifrn.AcademicService;
 
+import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
+import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.services.ClassesService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,8 @@ import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 class ClassesServiceTest {
+    @Mock
+    private ClassMapper classsMapper;
 
     @Mock
     private ClassesRepository classesRepository;
@@ -49,8 +53,17 @@ class ClassesServiceTest {
 
     @Test
     void testGetAll() {
-        when(classesRepository.findAll()).thenReturn(List.of(turma));
-        List<Classes> all = classesService.getAll();
+        Classes turmaEntity = new Classes();
+        turmaEntity.setName("Matemática");
+
+        ResponseClassDTO turmaDTO = new ResponseClassDTO();
+        turmaDTO.setName("Matemática");
+
+        when(classesRepository.findAll()).thenReturn(List.of(turmaEntity));
+        when(classsMapper.toResponseClassDTO(anyList())).thenReturn(List.of(turmaDTO));
+
+        List<ResponseClassDTO> all = classesService.getAll();
+
         assertEquals(1, all.size());
         assertEquals("Matemática", all.get(0).getName());
     }
