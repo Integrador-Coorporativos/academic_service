@@ -58,8 +58,6 @@ public class ClassesService {
                 .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
 
         List<StudentPerformance> classStudents = new ArrayList<>();
-
-        // Itera sobre os IDs de estudante salvos na Classe
         for (String studentId : classe.getUserId()) {
             UserRepresentation user = keycloakAdminConfig.findKeycloakUser(studentId);
 
@@ -78,7 +76,7 @@ public class ClassesService {
         ResponseClassByIdDTO responseClassByIdDTO = classsMapper.toResponseClassByDTO(classe);
         responseClassByIdDTO.setStudents(classStudents);
 
-        return responseClassByIdDTO; // Retorno corrigido!
+        return responseClassByIdDTO;
     }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
@@ -197,6 +195,4 @@ public class ClassesService {
 
         return classesRepository.save(classes);
     }
-
-
 }

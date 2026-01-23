@@ -7,7 +7,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record KeycloakPropertiesConfig(
         String clientSecret,
         String serverUrl,
+        String internalUrl,
         String adminUser,
         String adminPassword,
-        String realm
+        String adminClientId,
+        String realm,
+        String adminRealm
 ) {}

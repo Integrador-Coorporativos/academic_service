@@ -72,6 +72,9 @@ spring:
     keycloak:
       client-secret: ${KEYCLOAK_CLIENT_SECRET}
       server-url: ${KEYCLOAK_SERVER_URL}
+      internal-url: ${KEYCLOAK_INTERNAL_URL}
+      admin-realm: ${KEYCLOAK_ADMIN_REALM}
+      admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
       admin-user: ${KEYCLOAK_ADMIN_USER}
       admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
       realm: ${KEYCLOAK_REALM}

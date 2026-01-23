@@ -8,8 +8,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class KeycloakAdminConfig {
 
@@ -18,9 +16,9 @@ public class KeycloakAdminConfig {
 
     public Keycloak createKeycloakAdminClient() {
         Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl(envKeycloak.serverUrl())
-                .realm("master") // realm onde o admin user existe
-                .clientId("admin-cli") // client para admin
+                .serverUrl(envKeycloak.internalUrl())
+                .realm(envKeycloak.adminRealm()) // realm onde o admin user existe
+                .clientId(envKeycloak.adminClientId()) // client para admin
                 .clientSecret(envKeycloak.clientSecret()) // se necessário
                 .username(envKeycloak.adminUser()) // usuário admin
                 .password(envKeycloak.adminPassword())
@@ -39,22 +37,17 @@ public class KeycloakAdminConfig {
 
         Response response = keycloak.realm(envKeycloak.realm()).users().create(user);
         return response;
-
     }
-
 
     public UserRepresentation findKeycloakUser(String userId) throws Exception {
         try {
             Keycloak keycloak = createKeycloakAdminClient();
-
-            // Em vez de .search(), usamos .get(id) que foca no UUID interno
             return keycloak.realm(envKeycloak.realm())
                     .users()
                     .get(userId) // Busca direta pelo UUID
                     .toRepresentation();
 
         } catch (Exception e) {
-            // Log para outros erros (conexão, timeout, etc)
             System.err.println("Erro ao buscar usuário no Keycloak: " + e.getMessage());
             return null;
         }
