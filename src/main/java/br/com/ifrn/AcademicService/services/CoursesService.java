@@ -26,19 +26,10 @@ public class CoursesService {
 
     @CacheEvict(value = "coursesCacheAll", allEntries = true)
     public Courses create(Courses course) {
-        if (course.getName() == null) {
-            throw new IllegalArgumentException("Nome do curso não pode ser nulo");
+        if (course.getName() == null || course.getName().isEmpty() || course.getName().length() > 255 || course.getDescription().length() > 500) {
+            throw new IllegalArgumentException("Nome ou Descrição do curso inválido!");
         }
-        if (course.getName().isEmpty()) {
-            throw new IllegalArgumentException("Nome do curso não pode ser vazio");
-        }
-        if (course.getName().length() > 255) {
-            throw new IllegalArgumentException("Nome do curso não pode exceder 255 caracteres");
-        }
-        if (course.getDescription().length() > 500) {
-            throw new IllegalArgumentException("Descrição do curso não pode exceder 500 caracteres");
-        }
-        return coursesRepository.save(course);
+        return findOrCreateByName(course.getName());
     }
 
     @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)

@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
@@ -11,6 +12,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import br.com.ifrn.AcademicService.models.Classes;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,27 +39,46 @@ public class ClassesService {
     @Autowired
     KeycloakAdminConfig  keycloakAdminConfig;
 
+    @Transactional(readOnly = true)
     @Cacheable(value = "classesCacheAll")
-    public List<Classes> getAll() { return classesRepository.findAll(); }
+    public List<ResponseClassDTO> getAll() {
+        List<ResponseClassDTO> responseClasseDTO = classsMapper.toResponseClassDTO(classesRepository.findAll());
+
+        return responseClasseDTO;
+    }
 
     @Cacheable(value = "classesCache", key = "#id")
     public Optional<Classes> getById(Integer id) { return classesRepository.findById(id); }
 
+
+    @Transactional(readOnly = true)
     @Cacheable(value = "classesCache", key = "#id")
-    public ResponseClassByIdDTO getByClassId(Integer id) {
+    public ResponseClassByIdDTO getByClassId(Integer id) throws Exception {
         Classes classe = classesRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Classe not found")
-                );
-        List<String> students = classe.getUserId();
-        List<StudentPerformance> classStudents  = new ArrayList<>();
-        students.stream().forEach(student -> {
-            UserRepresentation user = keycloakAdminConfig.findKeycloakUser(student);
-            StudentPerformance studentPerformance = studentPerformanceService.getStudentPerformanceByStudentId(user.getId());
-            classStudents.add(studentPerformance);
-        });
+                .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
+
+        List<StudentPerformance> classStudents = new ArrayList<>();
+
+        // Itera sobre os IDs de estudante salvos na Classe
+        for (String studentId : classe.getUserId()) {
+            UserRepresentation user = keycloakAdminConfig.findKeycloakUser(studentId);
+
+            // CHECK DE SEGURANÇA: Só prossegue se o usuário existir no Keycloak
+            if (user != null && user.getId() != null) {
+                StudentPerformance performance = studentPerformanceService.getStudentPerformanceByStudentId(user.getId());
+                if (performance != null) {
+                    classStudents.add(performance);
+                }
+            } else {
+                // Opcional: Logar que o usuário X não foi encontrado no Keycloak
+                System.out.println("Aviso: Usuário " + studentId + " não encontrado no Keycloak.");
+            }
+        }
+
         ResponseClassByIdDTO responseClassByIdDTO = classsMapper.toResponseClassByDTO(classe);
         responseClassByIdDTO.setStudents(classStudents);
-        return new ResponseClassByIdDTO();
+
+        return responseClassByIdDTO; // Retorno corrigido!
     }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)

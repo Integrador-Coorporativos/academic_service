@@ -43,17 +43,21 @@ public class KeycloakAdminConfig {
     }
 
 
-    public UserRepresentation findKeycloakUser(String userId) {
-        Keycloak keycloak = createKeycloakAdminClient(); // cliente admin
+    public UserRepresentation findKeycloakUser(String userId) throws Exception {
+        try {
+            Keycloak keycloak = createKeycloakAdminClient();
 
-        List<UserRepresentation> users = keycloak.realm(envKeycloak.realm())
-                .users()
-                .search(userId);
-        if (users.isEmpty()) {
+            // Em vez de .search(), usamos .get(id) que foca no UUID interno
+            return keycloak.realm(envKeycloak.realm())
+                    .users()
+                    .get(userId) // Busca direta pelo UUID
+                    .toRepresentation();
+
+        } catch (Exception e) {
+            // Log para outros erros (conexão, timeout, etc)
+            System.err.println("Erro ao buscar usuário no Keycloak: " + e.getMessage());
             return null;
         }
-        UserRepresentation user = users.get(0);
-        return user;
     }
 
 }
