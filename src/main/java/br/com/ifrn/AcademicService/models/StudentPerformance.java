@@ -10,7 +10,7 @@ import org.hibernate.envers.Audited;
 import java.time.LocalDate;
 
 @Entity
-@Audited
+//@Audited
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
