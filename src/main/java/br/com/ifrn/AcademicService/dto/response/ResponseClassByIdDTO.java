@@ -1,16 +1,14 @@
 package br.com.ifrn.AcademicService.dto.response;
 
-
 import br.com.ifrn.AcademicService.models.ClassComments;
 import br.com.ifrn.AcademicService.models.Courses;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
 import java.util.List;
 
-@Getter @Setter
-public class ResponseClassDTO implements Serializable {
+@Getter
+@Setter
+public class ResponseClassByIdDTO {
     private int id;
     private String name;
     private String semester;
@@ -18,6 +16,6 @@ public class ResponseClassDTO implements Serializable {
     private String shift;
     private Courses course;
     private List<ClassComments> comments;
-    private List<String> userId;
     private String classId;
+    private List<StudentDataDTO> students;
 }

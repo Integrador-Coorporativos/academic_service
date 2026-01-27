@@ -15,7 +15,9 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @EnableCaching
 @Configuration
 public class RedisCacheConfig {
@@ -33,6 +35,30 @@ public class RedisCacheConfig {
         config.setPassword(RedisPassword.of(redisENV.password()));
 
         return new LettuceConnectionFactory(config);
+    }
+
+    @Bean
+    public RedisCacheConfiguration cacheConfiguration() {
+        ObjectMapper mapper = new ObjectMapper();
+        // 1. O passo crucial: Registrar o módulo de datas
+        mapper.registerModule(new JavaTimeModule());
+
+        // 2. Ativar a tipagem para que o Redis saiba qual classe está lendo
+        mapper.activateDefaultTyping(
+                mapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
+
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1))
+                .disableCachingNullValues()
+                // 3. Forçar o Redis a usar este serializador configurado
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                                new GenericJackson2JsonRedisSerializer(mapper)
+                        )
+                );
     }
 
     @Bean

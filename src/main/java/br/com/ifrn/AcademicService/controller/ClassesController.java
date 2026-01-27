@@ -2,21 +2,17 @@ package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.ClassesControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.services.ClassesService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +25,8 @@ public class ClassesController implements ClassesControllerDocs {
     private ClassesService classesService;
 
     @GetMapping
-    public ResponseEntity<List<Classes>> getAll() {
-        List<Classes> classesList = classesService.getAll();
+    public ResponseEntity<List<ResponseClassDTO>> getAll() {
+        List<ResponseClassDTO> classesList = classesService.getAll();
         if (classesList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -38,10 +34,12 @@ public class ClassesController implements ClassesControllerDocs {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Classes> getById(@PathVariable Integer id) {
-        Optional<Classes> classes = classesService.getById(id);
-        return classes.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<ResponseClassByIdDTO> getById(@PathVariable Integer id) throws Exception {
+        ResponseClassByIdDTO classes = classesService.getByClassId(id);
+        if (classes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(classes);
     }
 
     @PostMapping
