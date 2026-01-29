@@ -1,12 +1,16 @@
 package br.com.ifrn.AcademicService.services;
 
+import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
+import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
+import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +19,9 @@ public class CoursesService {
 
     @Autowired
     private CoursesRepository coursesRepository;
+
+    @Autowired
+    private ClassesRepository classesRepository;
 
     @Cacheable(value = "coursesCacheAll")
     public List<Courses> getAll() {
@@ -88,4 +95,29 @@ public class CoursesService {
 
         return course;
     }
+
+    public List<CoursePanelResponseDTO> getCoursesPanel() {
+        List<Courses> allCourses = coursesRepository.findAll();
+        List<CoursePanelResponseDTO> panelList = new ArrayList<>();
+
+        for (Courses course : allCourses) {
+            List<Classes> classes = classesRepository.findByCourse(course);
+
+            int totalClasses = classes.size();
+
+            int totalStudent = classes.stream()
+                    .mapToInt(c -> c.getUserId() == null ? 0 : c.getUserId().size())
+                    .sum();
+
+            panelList.add(new CoursePanelResponseDTO(
+                    course.getId(),
+                    course.getName(),
+                    totalClasses,
+                    totalStudent
+            ));
+        }
+        return panelList;
+    }
+
+
 }

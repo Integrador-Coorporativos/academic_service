@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import java.util.List;
 
 @Entity
-@Audited
+//@Audited
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -29,14 +30,18 @@ public class Classes {
     private int gradleLevel;
     private String shift;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
+    @JsonIgnoreProperties("classes")
     private Courses course;
 
 
-    @OneToMany(mappedBy = "classe")
+    @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ClassComments> comments;
 
     @ElementCollection
+    @JsonIgnore
     private List<String> userId;
 
     private String classId; //id da turma fornecido na planilha

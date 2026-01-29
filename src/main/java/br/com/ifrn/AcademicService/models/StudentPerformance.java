@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Audited
+//@Audited
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
