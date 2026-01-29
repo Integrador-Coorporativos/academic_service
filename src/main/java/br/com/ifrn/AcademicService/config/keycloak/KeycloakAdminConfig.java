@@ -1,4 +1,4 @@
-package br.com.ifrn.AcademicService.keycloak;
+package br.com.ifrn.AcademicService.config.keycloak;
 
 import jakarta.ws.rs.core.Response;
 import org.keycloak.OAuth2Constants;
@@ -16,9 +16,9 @@ public class KeycloakAdminConfig {
 
     public Keycloak createKeycloakAdminClient() {
         Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl(envKeycloak.serverUrl())
-                .realm("master") // realm onde o admin user existe
-                .clientId("admin-cli") // client para admin
+                .serverUrl(envKeycloak.internalUrl())
+                .realm(envKeycloak.adminRealm()) // realm onde o admin user existe
+                .clientId(envKeycloak.adminClientId()) // client para admin
                 .clientSecret(envKeycloak.clientSecret()) // se necessário
                 .username(envKeycloak.adminUser()) // usuário admin
                 .password(envKeycloak.adminPassword())
@@ -37,7 +37,20 @@ public class KeycloakAdminConfig {
 
         Response response = keycloak.realm(envKeycloak.realm()).users().create(user);
         return response;
+    }
 
+    public UserRepresentation findKeycloakUser(String userId) throws Exception {
+        try {
+            Keycloak keycloak = createKeycloakAdminClient();
+            return keycloak.realm(envKeycloak.realm())
+                    .users()
+                    .get(userId) // Busca direta pelo UUID
+                    .toRepresentation();
+
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar usuário no Keycloak: " + e.getMessage());
+            return null;
+        }
     }
 
 }

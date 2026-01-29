@@ -29,7 +29,7 @@ public class ClassCommentsService {
         if (comment.getComment() == null) {
             throw new IllegalArgumentException("Comentário não pode ser nulo");
         }
-        if (comment.getComment().isEmpty()) {
+        if (comment.getComment().trim().isEmpty()) {
             throw new IllegalArgumentException("Comentário não pode ser vazio");
         }
         if (comment.getComment().length() > 255) {

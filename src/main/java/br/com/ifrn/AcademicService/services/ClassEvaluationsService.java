@@ -12,8 +12,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassEvaluationsService {
@@ -29,12 +31,12 @@ public class ClassEvaluationsService {
 
         List<ClassEvaluations> classEvaluations = classEvaluationsRepository.findAll();
 
+        // Converte para ArrayList mutável
         List<ResponseClassEvaluationsDTO> responseDTOList = classEvaluations.stream()
                 .map(evaluationsMapper::toResponseClassEvaluationsDTO)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
         return responseDTOList;
-
     }
 
     @Cacheable(value = "evaluationsCache", key = "#id")

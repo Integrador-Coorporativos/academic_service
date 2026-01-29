@@ -1,5 +1,6 @@
 server:
-  port: 8080
+  port: ${SPRING_EXTERNAL_PORT}
+  forward-headers-strategy: framework
   error:
     include-message: always
     include-binding-errors: always
@@ -25,6 +26,32 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email
+        provider:
+          keycloak:
+            user-name-attribute: preferred_username
+            # URL que o NAVEGADOR vai usar (fora do docker)
+            #authorization-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/auth
+            # URL que o BACKEND vai usar (dentro do docker)
+            #token-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/token
+            #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
+            #user-info-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/userinfo
+            issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
+      resourceserver:
+        jwt:
+          #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
+
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: ${RABBITMQ_PORT}
@@ -34,12 +61,48 @@ spring:
   cache:
     type: redis
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      username: ${REDIS_USER}
+      connect-timeout: 2000
+
+    keycloak:
+      client-secret: ${KEYCLOAK_CLIENT_SECRET}
+      server-url: ${KEYCLOAK_SERVER_URL}
+      internal-url: ${KEYCLOAK_INTERNAL_URL}
+      admin-realm: ${KEYCLOAK_ADMIN_REALM}
+      admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
+      admin-user: ${KEYCLOAK_ADMIN_USER}
+      admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+      realm: ${KEYCLOAK_REALM}
+      client-id: ${KEYCLOAK_CLIENT_ID}
+
+    minio:
+      server-url: ${MINIO_SERVER_URL}
+      admin-user: ${MINIO_ROOT_USER}
+      admin-password: ${MINIO_ROOT_PASSWORD}
+      bucket-files: ${BUCKET_FILES_NAME}
+      bucket-images: ${BUCKET_IMAGES_NAME}
+
+
 # Configuração do Swagger/OpenAPI
 springdoc:
+  api-docs:
+    path: /v3/api-docs
   swagger-ui:
     path: /api/docs
     url: /v3/api-docs
-    server-url: http://localhost:8080
+    server-url: ${SPRING_SERVER_URL}
+    config-url: /v3/api-docs/swagger-config
+    oauth:
+      client-id: swagger-ui
+      use-pkce-with-authorization-code-grant: true
+      scopes: openid profile email
+      authorization-url: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
+      token-url: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
   show-actuator: true
 
 # Configuração global de CORS (opcional, mas útil no Swagger)
@@ -51,24 +114,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers
+        include: prometheus, health, info, metrics, loggers
   endpoint:
-    health:
-      show-details: always
-
-keycloak:
-  client-secret: ${KEYCLOAK_CLIENT_SECRET}
-  server-url: ${KEYCLOAK_SERVER_URL}
-  admin-user: ${KEYCLOAK_ADMIN_USER}
-  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
-  realm: ${KEYCLOAK_REALM}
-
-minio:
-  server-url: ${MINIO_SERVER_URL}
-  admin-user: ${MINIO_ROOT_USER}
-  admin-password: ${MINIO_ROOT_PASSWORD}
-  bucket-files: ${BUCKET_FILES_NAME}
-  bucket-images: ${BUCKET_IMAGES_NAME}
-redis:
-  host: ${REDIS_HOST}
-  port: ${REDIS_PORT}
+    prometheus:
+      enabled: true

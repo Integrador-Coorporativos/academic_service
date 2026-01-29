@@ -31,13 +31,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Rodar testes
-        run: ./mvnw clean test
+      - name: Build, testes e coverage
+        run: ./mvnw clean verify
 
       - name: Gerar relatório Surefire HTML
         run: ./mvnw surefire-report:report
 
-      - name: Publicar relatórios como artefatos
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
+      - name: Upload relatórios de teste
         uses: actions/upload-artifact@v4
         with:
           name: relatorios-de-teste
@@ -45,3 +51,25 @@ jobs:
             target/site/surefire-report.html
             target/surefire-reports/
 
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install Trivy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Build, Scan & Push Import Service
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/academic_service:latest
+          docker build -t $IMAGE_NAME .
+          trivy image --exit-code 1 --severity CRITICAL $IMAGE_NAME
+          docker push $IMAGE_NAME
+
+      - name: Disparar Deploy no Easypanel
+        run: |
+          curl -X POST "${{ secrets.EASYPANEL_DEPLOY_URL }}"

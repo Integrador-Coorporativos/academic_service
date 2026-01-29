@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Use um valor fixo para evitar que ele tente buscar na rede durante o teste
+          jwk-set-uri: http://localhost:8081/realms/test/protocol/openid-connect/certs
+          issuer-uri: null
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+    listener:
+      simple:
+        auto-startup: false
+      direct:
+        auto-startup: false
+minio:
+  server-url: http://localhost:9000
+  admin-user: test
+  admin-password: test
+  bucket-files: test-files
+  bucket-images: test-images
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: test
+  client-secret: test
+
+redis:
+  host: localhost
+  port: 6379

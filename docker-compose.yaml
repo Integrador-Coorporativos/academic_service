@@ -1,57 +1,39 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: evaluations-db
-    environment:
-      POSTGRES_DB: evaluationsdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-    ports:
-      - "5434:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - classnet
-
-  evaluations-service:
+  academic-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: evaluations-service
-    depends_on:
-      - postgres
-
+    container_name: academic-service-local
     environment:
-
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/evaluationsdb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: pass
-      KEYCLOAK_CLIENT_SECRET: mzjROuTev2gNJsHrSVyeNU4KF5Lgtgfe
-
-      KEYCLOAK_SERVER_URL: "http://keycloak:8080"
-      KEYCLOAK_ADMIN_USER: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin123
-      KEYCLOAK_REALM: ifrn
-
-      MINIO_SERVER_URL: "http://minio:9000"
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: admin123
-      BUCKET_FILES_NAME: files
-      BUCKET_IMAGES_NAME: images
-
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: admin
-      RABBITMQ_PASSWORD: admin123
-
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL}
+      KEYCLOAK_INTERNAL_URL: ${KEYCLOAK_INTERNAL_URL}
+      KEYCLOAK_ADMIN_REALM: ${KEYCLOAK_ADMIN_REALM}
+      KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID}
+      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      MINIO_SERVER_URL: ${MINIO_SERVER_URL}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      BUCKET_FILES_NAME: ${BUCKET_FILES_NAME}
+      BUCKET_IMAGES_NAME: ${BUCKET_IMAGES_NAME}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_USER: ${REDIS_USER}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SPRING_SERVER_URL: ${SPRING_SERVER_URL}
+      SPRING_EXTERNAL_PORT: ${SPRING_EXTERNAL_PORT}
     ports:
-      - "8080:8080"
-    networks:
-      - classnet
-      - infra
+      - "8085:8085"
     volumes:
       - ~/.m2:/root/.m2
 

@@ -8,9 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Range;
 
 @Entity
+@Audited
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
