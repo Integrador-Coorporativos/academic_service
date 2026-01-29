@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Range;
 import java.time.LocalDate;
 
 @Entity
-@Audited
+//@Audited
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
