@@ -14,4 +14,5 @@ public class ResponseStudentPerformanceDTO implements Serializable {
     private float attendenceRate;
     private Integer failedSubjects;
     private String status;
+    private Integer totalLowGrades;
 }

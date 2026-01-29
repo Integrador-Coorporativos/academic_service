@@ -17,14 +17,12 @@ public class MessagingReceiveService {
 
     public void procMessage(ImportMessageDTO classMessageDTO) {
 
-                Classes classes = classesService.createOrUpdateClassByClassId(
-                        classMessageDTO.getCourse(),
-                        classMessageDTO.getSemester(),
-                1,
-                        classMessageDTO.getClassId(),
-                        classMessageDTO.getShift(),
-                        classMessageDTO.getUserId()
-                );
+        Classes classes = classesService.createOrUpdateClassByClassId(
+            classMessageDTO.getCourse(),
+            classMessageDTO.getClassId(),
+            classMessageDTO.getShift(),
+            classMessageDTO.getUserId()
+        );
 
         ResponseStudentPerformanceDTO studentPerformanceDTO = studentPerformanceService.createStudentPerformanceByConsumerMessageDTO(classMessageDTO);
         ResponseImporterDTO responseImporterDTO = new ResponseImporterDTO();

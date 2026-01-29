@@ -148,8 +148,6 @@ public class ClassesService {
      *
      * @param courseName   the name of the course associated with the class. If the course does not exist,
      *                     it will be created automatically.
-     * @param semester     the semester in which the class is scheduled (e.g. "1º", "2º", etc.).
-     * @param gradleLevel  the gradle level of the class; if {@code null}, defaults to 0.
      * @param classId      the unique identifier used to locate or create the class. Cannot be {@code null}.
      * @param shift        the shift of the class (e.g. "Matutino", "Vespertino").
      * @param userId       the identifier of the user associated with the class.
@@ -161,7 +159,7 @@ public class ClassesService {
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
     public Classes createOrUpdateClassByClassId(
-            String courseName, String semester, Integer gradleLevel,
+            String courseName,
             String classId, String shift, String userId) {
 
         // Validar dados obrigatórios
@@ -180,8 +178,6 @@ public class ClassesService {
             classes.setComments(new ArrayList<>());
             classes.setCourse(course);
             classes.setClassId(classId);
-            classes.setSemester(semester);
-            classes.setGradleLevel(gradleLevel != null ? gradleLevel : 0);
             classes.setShift(shift);
             classes.setName(course.getName() + "_" + classId);
 
@@ -194,12 +190,6 @@ public class ClassesService {
             userIds.add(userId);
         }
 
-        if (!classes.getSemester().equals(semester)) {
-            classes.setSemester(semester);
-        }
-        if (!Objects.equals(classes.getGradleLevel(), gradleLevel)) {
-            classes.setGradleLevel(gradleLevel);
-        }
         if (!classes.getShift().equals(shift)) {
             classes.setShift(shift);
         }

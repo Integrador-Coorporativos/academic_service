@@ -29,9 +29,11 @@ public class MessageConsumer {
                     actorId, null, Collections.emptyList());
 
             SecurityContextHolder.getContext().setAuthentication(auth);
+            System.out.println(message);
 
             // 3. Agora o service será executado e o Envers verá o actorId no contexto
             messagingReceiveService.procMessage(message);
+
 
         } finally {
             // 4. Limpeza obrigatória para não "contaminar" a próxima mensagem da thread

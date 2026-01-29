@@ -20,8 +20,9 @@ public class RequestClassDTO implements Serializable {
 
     @NotNull
     @Size(min = 1, max = 100)
-    private int gradleLevel;
+    private String shift;
+
     @NotNull
     @Size(min = 1, max = 100)
-    private String shift;
+    private String classId;
 }
