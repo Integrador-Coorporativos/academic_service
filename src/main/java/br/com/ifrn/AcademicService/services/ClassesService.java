@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
+import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
@@ -54,6 +55,25 @@ public class ClassesService {
 
     @Cacheable(value = "classesCache", key = "#id")
     public Optional<Classes> getById(Integer id) { return classesRepository.findById(id); }
+
+    @Transactional(readOnly = true)
+    public List<ClassPanelResponseDTO> getClassesForPanel() {
+        List<Classes> allClasses = classesRepository.findAll();
+        List<ClassPanelResponseDTO> panelList = new ArrayList<>();
+
+        for (Classes c : allClasses) {
+            panelList.add(new ClassPanelResponseDTO(
+                    c.getId(),
+                    c.getName(),
+                    c.getShift(),
+                    c.getCourse() != null ? c.getCourse().getId() : 0,
+                    c.getCourse() != null ? c.getCourse().getName() : "-"
+            ));
+        }
+
+        return panelList;
+    }
+
 
 
     @Transactional(readOnly = true)

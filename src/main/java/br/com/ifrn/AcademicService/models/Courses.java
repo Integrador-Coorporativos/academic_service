@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import java.util.List;
 
 @Entity
 //@Audited
@@ -23,5 +24,9 @@ public class Courses {
 
     @Column(length = 500)
     private String description;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("course")
+    private List<Classes> classes;
 
 }

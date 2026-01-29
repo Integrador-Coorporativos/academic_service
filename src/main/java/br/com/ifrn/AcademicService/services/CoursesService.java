@@ -1,6 +1,6 @@
 package br.com.ifrn.AcademicService.services;
 
-import br.com.ifrn.AcademicService.dto.CoursePanelResponseDTO;
+import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
@@ -84,25 +84,21 @@ public class CoursesService {
         for (Courses course : allCourses) {
             List<Classes> classes = classesRepository.findByCourse(course);
 
-            int quantClasses = classes.size();
-            int quantStudent = 0;
+            int totalClasses = classes.size();
 
-            String shift = classes.stream()
-                    .map(Classes::getShift)
-                    .distinct()
-                    .sorted()
-                    .reduce((a, b) -> a + " e " + b)
-                    .orElse("Não definido");
+            int totalStudent = classes.stream()
+                    .mapToInt(c -> c.getUserId() == null ? 0 : c.getUserId().size())
+                    .sum();
 
             panelList.add(new CoursePanelResponseDTO(
                     course.getId(),
                     course.getName(),
-                    quantClasses,
-                    quantStudent,
-                    shift
+                    totalClasses,
+                    totalStudent
             ));
         }
         return panelList;
     }
+
 
 }

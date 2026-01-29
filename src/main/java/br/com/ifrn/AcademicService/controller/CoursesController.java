@@ -1,7 +1,7 @@
 package br.com.ifrn.AcademicService.controller;
 
-import br.com.ifrn.AcademicService.controller.docs.CoursesControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
+import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.services.CoursesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,12 @@ public class CoursesController {
         Optional<Courses> course = courseService.getById(id);
         return course.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @GetMapping("/panel")
+    public ResponseEntity<List<CoursePanelResponseDTO>> getCoursesPanel() {
+        List<CoursePanelResponseDTO> panel = courseService.getCoursesPanel();
+        return ResponseEntity.ok(panel);
     }
 
     @PostMapping

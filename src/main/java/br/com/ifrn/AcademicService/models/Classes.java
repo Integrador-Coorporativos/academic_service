@@ -30,8 +30,8 @@ public class Classes {
     private int gradleLevel;
     private String shift;
 
-    @ManyToOne
-    //Ignorar por enquanti
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
     @JsonIgnoreProperties("classes")
     private Courses course;
 
