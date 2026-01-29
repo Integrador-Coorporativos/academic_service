@@ -27,7 +27,6 @@ public class Classes {
     @Column(name = "name",  nullable = false,  length = 255)
     private String name;
     private String semester;
-    private int gradleLevel;
     private String shift;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -156,10 +156,46 @@ public class ClassesService {
         return true;
     }
 
+
+    /**
+     *
+     * Creates a new {@link Classes} entity or updates an existing one based on the provided classId.
+     * <p>
+     * This method performs the following operations:
+     * <ul>
+     *     <li>If no class exists with the provided classId:
+     *         <ul>
+     *             <li>A new {@link Classes} is instantiated.</li>
+     *             <li>The course is retrieved or created using {@code courseName}.</li>
+     *             <li>The userId is added as the creator/owner of the class.</li>
+     *             <li>Comments list and other class properties are initialized.</li>
+     *             <li>The class is persisted in the database.</li>
+     *         </ul>
+     *     </li>
+     *     <li>If a class already exists:
+     *         <ul>
+     *             <li>The userId is added to the class only if not already present.</li>
+     *             <li>Semester, gradle level and shift are updated if different from the current values.</li>
+     *             <li>The updated entity is persisted in the database.</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     * </p>
+     *
+     * @param courseName   the name of the course associated with the class. If the course does not exist,
+     *                     it will be created automatically.
+     * @param classId      the unique identifier used to locate or create the class. Cannot be {@code null}.
+     * @param shift        the shift of the class (e.g. "Matutino", "Vespertino").
+     * @param userId       the identifier of the user associated with the class.
+     *
+     * @return the created or updated {@link Classes} entity.
+     *
+     * @throws IllegalArgumentException if {@code classId} is {@code null}.
+     */
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
     public Classes createOrUpdateClassByClassId(
-            String courseName, String semester, Integer gradleLevel,
+            String courseName,
             String classId, String shift, String userId) {
 
         if (classId == null)
@@ -176,8 +212,6 @@ public class ClassesService {
             classes.setComments(new ArrayList<>());
             classes.setCourse(course);
             classes.setClassId(classId);
-            classes.setSemester(semester);
-            classes.setGradleLevel(gradleLevel != null ? gradleLevel : 0);
             classes.setShift(shift);
             classes.setName(course.getName() + "_" + classId);
 

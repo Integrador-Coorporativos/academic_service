@@ -26,13 +26,13 @@ public interface StudentPerformanceMapper {
     @Mapping(source = "rejections", target = "failedSubjects", defaultValue = "0")
     @Mapping(source = "classId", target = "classId")
     @Mapping(source = "userId", target = "studentId")
-    @Mapping(source = "average", target = "averageScore")
+    //@Mapping(source = "average", target = "averageScore")
     @Mapping(source = "presence", target = "attendenceRate")
     @Mapping(source = "ira", target = "ira")
     RequestStudentPerformanceDTO toRequestStudentPerformanceByConsumerMessageDto (ImportMessageDTO dto);
 
     @Mapping(source = "failedSubjects", target = "failedSubjects")
-    @Mapping(source = "averageScore", target = "averageScore")
+    //@Mapping(source = "averageScore", target = "averageScore")
     @Mapping(source = "attendenceRate", target = "attendenceRate")
     @Mapping(source = "ira", target = "ira")
     @Mapping(source = "classId", target = "classId")

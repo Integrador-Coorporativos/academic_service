@@ -59,7 +59,7 @@ public class ClassesController implements ClassesControllerDocs {
         createdClasses.setCourse(curso);
         createdClasses.setSemester(classDTO.getSemester());
         createdClasses.setName(classDTO.getName());
-        createdClasses.setGradleLevel(classDTO.getGradleLevel());
+        createdClasses.setClassId(classDTO.getClassId());
         createdClasses.setShift(classDTO.getShift());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(classesService.create(createdClasses));
