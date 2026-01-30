@@ -24,6 +24,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "200", description = "Desempenho encontrado",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseStudentPerformanceDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
@@ -37,6 +38,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "200", description = "Desempenho da turma encontrado",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseClassEvaluationsDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
@@ -50,6 +52,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "201", description = "Desempenho do Aluno cadastrado",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseClassEvaluationsDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos enviados"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
@@ -65,6 +68,7 @@ public interface StudentPerformanceControllerDocs {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseStudentPerformanceDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos enviados"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })

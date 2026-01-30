@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,7 +57,7 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "409", description = "Conflito - avaliação já cadastrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, String classId, Integer professorId);
+    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, String classId, Authentication authentication);
 
     @Operation(summary = "Atualizar avaliação",
             description = "Atualiza os dados de uma avaliação existente.")
@@ -64,6 +66,7 @@ public interface ClassEvaluationsControllerDocs {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseClassEvaluationsDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Avaliação não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
@@ -73,6 +76,7 @@ public interface ClassEvaluationsControllerDocs {
     @Operation(summary = "Excluir avaliação", description = "Remove uma avaliação específica do sistema.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Avaliação removida"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Avaliação não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })

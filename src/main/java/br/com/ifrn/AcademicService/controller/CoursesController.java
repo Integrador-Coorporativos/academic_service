@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.CoursesControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
+import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.services.CoursesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +35,27 @@ public class CoursesController implements CoursesControllerDocs {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
+    @GetMapping("/panel")
+    public ResponseEntity<List<CoursePanelResponseDTO>> getCoursesPanel() {
+        List<CoursePanelResponseDTO> panel = courseService.getCoursesPanel();
+        return ResponseEntity.ok(panel);
+    }
+
     @PostMapping
     public ResponseEntity<Courses> create(@RequestBody RequestCourseDTO courseDTO) {
         Courses createdCourse = new Courses();
         createdCourse.setName(courseDTO.getName());
-        createdCourse.setDescription(courseDTO.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.create(createdCourse));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Courses> update(@PathVariable Integer id, @RequestBody Courses course) {
-        Optional<Courses> updatedCourse = Optional.ofNullable(courseService.update(id, course));
-        return updatedCourse.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<Courses> update(@PathVariable Integer id, @RequestBody RequestCourseDTO courseDTO) {
+        Courses course = new Courses();
+        course.setName(courseDTO.getName());
+        Courses updatedCourse = courseService.update(id, course);
+        return ResponseEntity.ok(updatedCourse);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {

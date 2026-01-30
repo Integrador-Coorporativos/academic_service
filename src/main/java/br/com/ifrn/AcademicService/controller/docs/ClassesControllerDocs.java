@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.controller.docs;
 
 import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
+import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
@@ -21,6 +22,7 @@ public interface ClassesControllerDocs {
     @Operation(summary = "Lista todas as turmas cadastradas")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de turmas retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
     })
     ResponseEntity<List<ResponseClassDTO>> getAll();
 
@@ -28,6 +30,7 @@ public interface ClassesControllerDocs {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Turma criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Curso não encontrado"),
             @ApiResponse(responseCode = "409", description = "Conflito ao criar turma"),
     })
@@ -36,6 +39,7 @@ public interface ClassesControllerDocs {
     @Operation(summary = "Recupera detalhes de uma turma específica")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Turma encontrada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
     })
     ResponseEntity<ResponseClassByIdDTO> getById(Integer id) throws Exception;
@@ -44,6 +48,7 @@ public interface ClassesControllerDocs {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Turma atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
     })
     ResponseEntity<Classes> update(Integer id, Classes classes);
@@ -54,4 +59,17 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
     })
     ResponseEntity<Void> delete(Integer id);
+
+
+    @Operation(
+            summary = "Listar turmas para o painel",
+            description = "Retorna uma lista simplificada de todas as turmas para exibição no dashboard."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar este recurso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    public ResponseEntity<List<ClassPanelResponseDTO>> getClassesForPanel();
 }

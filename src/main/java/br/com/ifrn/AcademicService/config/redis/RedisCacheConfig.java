@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.config.redis;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,8 @@ public class RedisCacheConfig {
         ObjectMapper mapper = new ObjectMapper();
         // 1. O passo crucial: Registrar o módulo de datas
         mapper.registerModule(new JavaTimeModule());
+
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         // 2. Ativar a tipagem para que o Redis saiba qual classe está lendo
         mapper.activateDefaultTyping(

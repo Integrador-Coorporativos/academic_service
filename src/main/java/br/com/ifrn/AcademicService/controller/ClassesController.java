@@ -2,10 +2,12 @@ package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.ClassesControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
+import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
+import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.services.ClassesService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,12 @@ public class ClassesController implements ClassesControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(classes);
     }
 
+    @GetMapping("/panel")
+    public ResponseEntity<List<ClassPanelResponseDTO>> getClassesForPanel() {
+        List<ClassPanelResponseDTO> panel = classesService.getClassesForPanel();
+        return ResponseEntity.ok(panel);
+    }
+
     @PostMapping
     public ResponseEntity<Classes> create(@RequestParam Integer courseId, @RequestBody RequestClassDTO classDTO) {
         Courses curso = classesService.getById(courseId)
@@ -49,9 +57,8 @@ public class ClassesController implements ClassesControllerDocs {
 
         Classes createdClasses = new Classes();
         createdClasses.setCourse(curso);
-        createdClasses.setSemester(classDTO.getSemester());
         createdClasses.setName(classDTO.getName());
-        createdClasses.setGradleLevel(classDTO.getGradleLevel());
+        createdClasses.setClassId(classDTO.getClassId());
         createdClasses.setShift(classDTO.getShift());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(classesService.create(createdClasses));

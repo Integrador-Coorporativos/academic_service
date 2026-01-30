@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Audited
@@ -24,19 +26,21 @@ public class StudentPerformance {
     private float attendenceRate;
     private Integer failedSubjects;
     private float ira;
+    private Integer totalLowGrades;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ElementCollection
+    private List<DisciplineDetails> disciplineDetails = new ArrayList<>();
 
     @PrePersist
     @PreUpdate
     public void preAtualizarStatus() {
         this.status = calcularStatus();
-        //this.lastUpdate = LocalDate.now(); // Garante que a data sempre mude na alteração
     }
 
     public Status calcularStatus() {
-        // Garantindo que failedSubjects não seja null para evitar NullPointerException
         int reprovacoes = (failedSubjects == null) ? 0 : failedSubjects;
 
         // 1. Condição para "RUIM" (Prioridade - Risco Acadêmico)

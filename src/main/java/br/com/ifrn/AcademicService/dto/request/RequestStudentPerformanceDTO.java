@@ -13,6 +13,6 @@ public class RequestStudentPerformanceDTO implements Serializable {
     private float averageScore;
     private float attendenceRate;
     private Integer failedSubjects;
-    private String status;
     private float ira;
+    private Integer totalLowGrades;
 }

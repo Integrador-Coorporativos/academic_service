@@ -40,16 +40,9 @@ spring:
         provider:
           keycloak:
             user-name-attribute: preferred_username
-            # URL que o NAVEGADOR vai usar (fora do docker)
-            #authorization-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/auth
-            # URL que o BACKEND vai usar (dentro do docker)
-            #token-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/token
-            #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
-            #user-info-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/userinfo
             issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
       resourceserver:
         jwt:
-          #jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/ifrn/protocol/openid-connect/certs
           issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
 
   rabbitmq:
