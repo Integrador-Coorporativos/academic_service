@@ -61,7 +61,7 @@ public class ClassEvaluationsService {
     }
 
     @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCacheByClass"}, key = "#classId")
-    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, String classId, Integer professorId) {
+    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, String classId, String professorId) {
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
         ClassEvaluations classEvaluations = new  ClassEvaluations();
         classEvaluations.setClassId(classId);//precisa adicionar validação de existencia de turma

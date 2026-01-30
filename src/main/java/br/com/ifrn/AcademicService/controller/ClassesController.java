@@ -57,7 +57,6 @@ public class ClassesController implements ClassesControllerDocs {
 
         Classes createdClasses = new Classes();
         createdClasses.setCourse(curso);
-        createdClasses.setSemester(classDTO.getSemester());
         createdClasses.setName(classDTO.getName());
         createdClasses.setClassId(classDTO.getClassId());
         createdClasses.setShift(classDTO.getShift());

@@ -7,10 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
 import java.util.List;
 
 @Entity
-//@Audited
+@Audited
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -22,11 +24,9 @@ public class Courses {
     @Column(length = 255)
     private String name;
 
-    @Column(length = 500)
-    private String description;
-
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("course")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private List<Classes> classes;
 
 }

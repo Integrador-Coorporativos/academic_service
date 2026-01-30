@@ -71,11 +71,6 @@ public class ClassesService {
         return panelList;
     }
 
-
-    public Optional<Classes> getById(Integer id) {
-        return classesRepository.findById(id);
-    }
-
     @Transactional(readOnly = true)
     @Cacheable(value = "classesCache", key = "#id")
     public ResponseClassByIdDTO getByClassId(Integer id) throws Exception {
@@ -227,15 +222,6 @@ public class ClassesService {
         List<String> userIds = classes.getUserId();
         if (!userIds.contains(userId)) {
             userIds.add(userId);
-        }
-
-        if (!Objects.equals(classes.getSemester(), semester)) {
-            classes.setSemester(semester);
-        }
-
-        // IMPORTANTE: gradleLevel pode vir null no update -> não atualiza para evitar NPE no unboxing
-        if (gradleLevel != null && classes.getGradleLevel() != gradleLevel) {
-            classes.setGradleLevel(gradleLevel);
         }
 
         if (!Objects.equals(classes.getShift(), shift)) {

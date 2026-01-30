@@ -32,9 +32,7 @@ public class StudentPerformanceService {
         if(studentPerformance == null){
             throw new EntityNotFoundException("Student Performance not found");
         }
-
         return studentPerformance;
-
     }
 
     @Cacheable(value = "studentPerformanceCache", key = "#id")

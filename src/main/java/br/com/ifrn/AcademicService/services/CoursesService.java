@@ -38,9 +38,7 @@ public class CoursesService {
 
         if (course.getName() == null ||
                 course.getName().isEmpty() ||
-                course.getName().length() > 255 ||
-                course.getDescription() == null ||
-                course.getDescription().length() > 500) {
+                course.getName().length() > 255 ) {
 
             throw new IllegalArgumentException("Nome ou Descrição do curso inválido!");
         }
@@ -67,7 +65,6 @@ public class CoursesService {
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
 
         course.setName(courseDetails.getName());
-        course.setDescription(courseDetails.getDescription());
 
         return coursesRepository.save(course);
     }

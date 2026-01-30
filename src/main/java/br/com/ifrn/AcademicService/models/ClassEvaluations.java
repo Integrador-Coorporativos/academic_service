@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.Range;
 import java.time.LocalDate;
 
 @Entity
-//@Audited
+@Audited
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,10 +20,8 @@ public class ClassEvaluations {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-
     private String classId;
-    private Integer professorId;
+    private String professorId;
     private LocalDate date;
 
     @Range(min = 0, max = 5)
@@ -30,6 +29,7 @@ public class ClassEvaluations {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "criteria_id")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private EvaluationsCriteria criteria;
 
 }

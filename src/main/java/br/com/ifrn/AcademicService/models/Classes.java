@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-
 import java.util.List;
 
 @Entity
-//@Audited
+@Audited
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -22,21 +21,19 @@ public class Classes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
-
     @Column(name = "name",  nullable = false,  length = 255)
     private String name;
-    private String semester;
     private String shift;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     @JsonIgnoreProperties("classes")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Courses course;
-
 
     @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
     @JsonIgnore
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private List<ClassComments> comments;
 
     @ElementCollection

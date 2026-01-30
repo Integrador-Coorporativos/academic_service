@@ -1,13 +1,18 @@
 package br.com.ifrn.AcademicService;
 
+import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
+import br.com.ifrn.AcademicService.dto.request.RequestCommentDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseCommentDTO;
 import br.com.ifrn.AcademicService.models.ClassComments;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.repository.ClassCommentsRepository;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.services.ClassCommentsService;
+import br.com.ifrn.AcademicService.services.ClassesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,6 +29,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClassCommentsServiceTest {
+
+    @Mock
+    private ClassesService classesService;
+
+    @Mock
+    private KeycloakAdminConfig keycloak;
 
     @Mock
     private ClassCommentsRepository commentsRepository;
@@ -45,7 +56,7 @@ class ClassCommentsServiceTest {
 
         comment = new ClassComments();
         comment.setId(1);
-        comment.setProfessorId(10);
+        comment.setProfessorId("professorId");
         comment.setComment("Excelente participação");
         comment.setCreatedAt(LocalDate.now());
         comment.setUpdatedAt(LocalDate.now());
@@ -56,7 +67,7 @@ class ClassCommentsServiceTest {
     void getByTurma_deveRetornarLista() {
         when(commentsRepository.findByClasseId(1)).thenReturn(List.of(comment));
 
-        List<ClassComments> list = commentService.getByTurma(1);
+        List<ResponseCommentDTO> list = commentService.getByTurma(1);
 
         assertEquals(1, list.size());
         assertEquals("Excelente participação", list.get(0).getComment());
@@ -68,7 +79,7 @@ class ClassCommentsServiceTest {
     void getByTurma_turmaInexistente_deveRetornarListaVazia() {
         when(commentsRepository.findByClasseId(999)).thenReturn(List.of());
 
-        List<ClassComments> list = commentService.getByTurma(999);
+        List<ResponseCommentDTO> list = commentService.getByTurma(999);
 
         assertNotNull(list);
         assertTrue(list.isEmpty());
@@ -78,23 +89,42 @@ class ClassCommentsServiceTest {
 
     @Test
     void create_deveSalvarQuandoValido() {
-        when(commentsRepository.save(any(ClassComments.class))).thenReturn(comment);
+        // Arrange
+        String profId = "prof-123";
+        Integer classId = 1;
+        RequestCommentDTO dto = new RequestCommentDTO("Excelente participação");
 
-        ClassComments created = commentService.create(comment);
+        Classes mockClasse = new Classes();
+        mockClasse.setId(classId);
 
+        UserRepresentation mockUser = new UserRepresentation();
+        mockUser.setFirstName("Professor Girafales");
+
+        when(classesService.getById(classId)).thenReturn(Optional.of(mockClasse));
+        try {
+            when(keycloak.findKeycloakUser(profId)).thenReturn(mockUser);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        when(commentsRepository.save(any(ClassComments.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        ClassComments created = commentService.create(dto, profId, classId);
+
+        // Assert
         assertNotNull(created);
         assertEquals("Excelente participação", created.getComment());
-        assertEquals(10, created.getProfessorId());
+        assertEquals(profId, created.getProfessorId());
+        assertEquals("Professor Girafales", created.getProfessorName());
         verify(commentsRepository, times(1)).save(any(ClassComments.class));
-        verifyNoMoreInteractions(commentsRepository);
     }
 
     @Test
     void create_commentNulo_deveFalhar() {
-        comment.setComment(null);
+        RequestCommentDTO dto = new RequestCommentDTO(null);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> commentService.create(comment));
+                () -> commentService.create(dto, "id", 1));
 
         assertEquals("Comentário não pode ser nulo", ex.getMessage());
         verify(commentsRepository, never()).save(any());
@@ -102,67 +132,51 @@ class ClassCommentsServiceTest {
 
     @Test
     void create_commentVazio_deveFalhar() {
-        comment.setComment("");
+        RequestCommentDTO dto = new RequestCommentDTO("");
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> commentService.create(comment));
+                () -> commentService.create(dto, "id", 1));
 
         assertEquals("Comentário não pode ser vazio", ex.getMessage());
-        verify(commentsRepository, never()).save(any());
     }
 
     @Test
-    void create_commentCom1Caractere_devePassar() {
-        comment.setComment("A");
-        when(commentsRepository.save(any(ClassComments.class))).thenReturn(comment);
+    void create_classeNaoEncontrada_deveFalhar() {
+        RequestCommentDTO dto = new RequestCommentDTO("Bom trabalho");
+        when(classesService.getById(99)).thenReturn(Optional.empty());
 
-        ClassComments created = commentService.create(comment);
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> commentService.create(dto, "prof-1", 99));
 
-        assertEquals(1, created.getComment().length());
-        verify(commentsRepository).save(any(ClassComments.class));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertEquals("Classe não encontrada", ex.getReason());
     }
 
     @Test
-    void create_commentCom255_devePassar() {
-        comment.setComment("C".repeat(255));
-        when(commentsRepository.save(any(ClassComments.class))).thenReturn(comment);
-
-        ClassComments created = commentService.create(comment);
-
-        assertEquals(255, created.getComment().length());
-        verify(commentsRepository).save(any(ClassComments.class));
-    }
-
-    @Test
-    void create_commentCom256_deveFalhar() {
-        comment.setComment("C".repeat(256));
+    void create_commentExcedendoLimite_deveFalhar() {
+        RequestCommentDTO dto = new RequestCommentDTO("C".repeat(256));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> commentService.create(comment));
+                () -> commentService.create(dto, "id", 1));
 
         assertEquals("Comentário não pode exceder 255 caracteres", ex.getMessage());
+    }
+
+    @Test
+    void create_professorIdNull_deveFalhar() {
+        RequestCommentDTO dto = new RequestCommentDTO("sdfgsdf");
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> commentService.create(dto, null, 1));
+        assertEquals("Professor ID inválido!", ex.getMessage());
         verify(commentsRepository, never()).save(any());
     }
 
     @Test
-    void create_professorIdZero_deveFalhar() {
-        comment.setProfessorId(0);
-
+    void create_professorIdVazio_deveFalhar() {
+        RequestCommentDTO dto = new RequestCommentDTO("sgdfg");
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> commentService.create(comment));
-
-        assertEquals("Professor ID deve ser maior que zero", ex.getMessage());
-        verify(commentsRepository, never()).save(any());
-    }
-
-    @Test
-    void create_professorIdNegativo_deveFalhar() {
-        comment.setProfessorId(-1);
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> commentService.create(comment));
-
-        assertEquals("Professor ID deve ser maior que zero", ex.getMessage());
+                () -> commentService.create(dto, "", 1));
+        assertEquals("Professor ID inválido!", ex.getMessage());
         verify(commentsRepository, never()).save(any());
     }
 
@@ -170,7 +184,7 @@ class ClassCommentsServiceTest {
     void update_quandoExiste_deveAtualizarCamposESalvar() {
         ClassComments existing = new ClassComments();
         existing.setId(1);
-        existing.setProfessorId(10);
+        existing.setProfessorId("professorId");
         existing.setComment("Antigo");
         existing.setUpdatedAt(LocalDate.of(2026, 1, 1));
         existing.setClasse(classe);

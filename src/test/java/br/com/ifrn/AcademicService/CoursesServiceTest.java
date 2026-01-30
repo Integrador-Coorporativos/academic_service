@@ -33,7 +33,6 @@ class CoursesServiceTest {
         course = new Courses();
         course.setId(1);
         course.setName("Análise de Sistemas");
-        course.setDescription("Curso de Análise de Sistemas");
     }
 
     @Test
@@ -67,16 +66,24 @@ class CoursesServiceTest {
 
     @Test
     void testUpdate() {
-        Courses updated = new Courses();
-        updated.setName("Informática");
-        updated.setDescription("Curso de Informática");
+        // GIVEN
+        Courses updatedDetails = new Courses();
+        updatedDetails.setName("Informática"); // Nome válido, não lança erro!
 
-        when(coursesRepository.findById(1)).thenReturn(Optional.of(course));
-        when(coursesRepository.save(any())).thenReturn(updated);
+        // "turma" ou "course" (o que está no banco)
+        Courses courseInDb = new Courses();
+        courseInDb.setId(1);
+        courseInDb.setName("Nome Antigo");
 
-        Courses result = coursesService.update(1, updated);
+        when(coursesRepository.findById(1)).thenReturn(Optional.of(courseInDb));
+        when(coursesRepository.save(any(Courses.class))).thenAnswer(i -> i.getArgument(0));
 
+        // WHEN
+        Courses result = coursesService.update(1, updatedDetails);
+
+        // THEN
         assertEquals("Informática", result.getName());
+        verify(coursesRepository).save(any(Courses.class));
     }
 
     @Test
@@ -95,14 +102,6 @@ class CoursesServiceTest {
 
         assertThrows(RuntimeException.class, () -> coursesService.delete(1));
         verify(coursesRepository, never()).deleteById(any());
-    }
-
-    @Test
-    void testCreateWithNullDescriptionShouldFail() {
-        course.setDescription(null);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.create(course));
     }
 
     @Test
