@@ -3,6 +3,7 @@ package br.com.ifrn.AcademicService.controller.docs;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,7 +43,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> getClassEvaluationsById(@PathVariable String id);
+    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year);
 
     @Operation(
             summary = "Cadastrar desempenho do Aluno",

@@ -1,16 +1,14 @@
 package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
-import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
-import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
-import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
-import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
+import br.com.ifrn.AcademicService.dto.response.*;
 import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -85,7 +83,6 @@ public class ClassesService {
             responseEmpty.setStudents(classStudents);
             return responseEmpty;
         }
-
         for (String studentId : userIds) {
             UserRepresentation user = keycloakAdminConfig.findKeycloakUser(studentId);
 
@@ -96,7 +93,6 @@ public class ClassesService {
                         studentPerformanceService.getStudentPerformanceByStudentId(user.getId())
                 );
 
-                // se mapper retornou null, ignora
                 if (performance != null) {
                     performance.setName(user.getFirstName());
                     performance.setRegistration(user.getUsername());

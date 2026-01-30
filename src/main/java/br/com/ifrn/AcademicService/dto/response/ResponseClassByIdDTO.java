@@ -15,7 +15,7 @@ public class ResponseClassByIdDTO {
     private int gradleLevel;
     private String shift;
     private Courses course;
-    private List<ClassComments> comments;
+    private List<ResponseCommentDTO> comments;
     private String classId;
     private List<StudentDataDTO> students;
 }
