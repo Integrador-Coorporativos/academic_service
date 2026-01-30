@@ -7,6 +7,11 @@ import br.com.ifrn.AcademicService.services.ClassEvaluationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -33,8 +38,22 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
     }
 
     @PostMapping
-    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, @RequestParam String classId, @RequestParam Integer professorId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(classEvaluationsService.createEvaluation(dto,  classId, professorId));
+    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(
+            @RequestBody RequestClassEvaluationsDTO dto,
+            @RequestParam String classId,
+            Authentication authentication
+    ) {
+        String professorId = null;
+
+        if (authentication.getPrincipal() instanceof Jwt jwt) {
+            professorId = jwt.getSubject();
+        } else if (authentication.getPrincipal() instanceof OidcUser oidc) {
+            professorId = oidc.getSubject();
+        } else {
+            professorId = authentication.getName();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(classEvaluationsService.createEvaluation(dto, classId, professorId));
     }
 
     @PutMapping("/{id}")

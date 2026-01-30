@@ -12,7 +12,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Range;
 
 @Entity
-//@Audited
+@Audited
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor

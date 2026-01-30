@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class ResponseClassEvaluationsDTO implements Serializable {
     private Integer id;
     private String classId;
-    private Integer professorId;
+    private String professorId;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;

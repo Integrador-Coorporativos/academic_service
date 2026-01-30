@@ -6,6 +6,7 @@ import br.com.ifrn.AcademicService.config.keycloak.KeycloakPropertiesConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableConfigurationProperties({
         KeycloakPropertiesConfig.class,
@@ -13,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         RedisPropertiesConfig.class
 })
 @SpringBootApplication
+@EnableJpaAuditing
 public class AcademicServiceApplication {
 
 	public static void main(String[] args) {

@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.controller;
 
+import br.com.ifrn.AcademicService.controller.docs.CoursesControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
 import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
 import br.com.ifrn.AcademicService.models.Courses;
@@ -13,8 +14,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/courses")
-public class CoursesController {
-// implements CoursesControllerDocs
+public class CoursesController implements CoursesControllerDocs {
+
     @Autowired
     private CoursesService courseService;
 
@@ -44,7 +45,6 @@ public class CoursesController {
     public ResponseEntity<Courses> create(@RequestBody RequestCourseDTO courseDTO) {
         Courses createdCourse = new Courses();
         createdCourse.setName(courseDTO.getName());
-        createdCourse.setDescription(courseDTO.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.create(createdCourse));
     }
 
@@ -52,7 +52,6 @@ public class CoursesController {
     public ResponseEntity<Courses> update(@PathVariable Integer id, @RequestBody RequestCourseDTO courseDTO) {
         Courses course = new Courses();
         course.setName(courseDTO.getName());
-        course.setDescription(courseDTO.getDescription());
         Courses updatedCourse = courseService.update(id, course);
         return ResponseEntity.ok(updatedCourse);
     }

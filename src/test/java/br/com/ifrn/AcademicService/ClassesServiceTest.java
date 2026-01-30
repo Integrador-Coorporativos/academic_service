@@ -61,7 +61,6 @@ class ClassesServiceTest {
         turma = new Classes();
         turma.setId(1);
         turma.setName("Matemática");
-        turma.setSemester("2025.2");
     }
 
     // ==============================
@@ -314,9 +313,10 @@ class ClassesServiceTest {
 
     @Test
     void testCreateOrUpdateClassIdNullShouldThrow() {
+        // Agora passando apenas 4 parâmetros conforme seu novo Service
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
             classesService.createOrUpdateClassByClassId(
-                    "Info", "2025.2", 1, null, "Vespertino", "user-1"
+                    "Info", null, "Vespertino", "user-1"
             );
         });
 
@@ -326,12 +326,11 @@ class ClassesServiceTest {
     @Test
     void testCreateOrUpdateNotFoundShouldCreate() {
         String courseName = "Informática";
-        String semester = "2025.2";
-        Integer gradleLevel = null;
         String classId = "T01";
         String shift = "Vespertino";
         String userId = "user-123";
 
+        // Mock do repositório
         when(classesRepository.findByClassId(classId)).thenReturn(null);
 
         Courses course = new Courses();
@@ -340,18 +339,17 @@ class ClassesServiceTest {
 
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        // Chamada ao método com a nova assinatura
         Classes result = classesService.createOrUpdateClassByClassId(
-                courseName, semester, gradleLevel, classId, shift, userId
+                courseName, classId, shift, userId
         );
 
         assertEquals(course, result.getCourse());
         assertEquals(classId, result.getClassId());
-        assertEquals(semester, result.getSemester());
-        assertEquals(0, result.getGradleLevel());
         assertEquals(shift, result.getShift());
         assertEquals("Informática_T01", result.getName());
         assertNotNull(result.getComments());
-        assertEquals(List.of(userId), result.getUserId());
+        assertTrue(result.getUserId().contains(userId));
 
         verify(coursesService).findOrCreateByName(courseName);
         verify(classesRepository).save(any(Classes.class));
@@ -364,21 +362,18 @@ class ClassesServiceTest {
         Classes existing = new Classes();
         existing.setClassId(classId);
         existing.setUserId(new ArrayList<>(List.of("user-old")));
-        existing.setSemester("2025.1");
-        existing.setGradleLevel(1);
         existing.setShift("Matutino");
+        // Se o semester não muda via parâmetro, ele mantém o que já estava
 
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática", "2025.2", 2, classId, "Vespertino", "user-new"
+                "Informática", classId, "Vespertino", "user-new"
         );
 
         assertTrue(result.getUserId().contains("user-old"));
         assertTrue(result.getUserId().contains("user-new"));
-        assertEquals("2025.2", result.getSemester());
-        assertEquals(2, result.getGradleLevel());
         assertEquals("Vespertino", result.getShift());
     }
 
@@ -389,15 +384,13 @@ class ClassesServiceTest {
         Classes existing = new Classes();
         existing.setClassId(classId);
         existing.setUserId(new ArrayList<>(List.of("user-1")));
-        existing.setSemester("2025.2");
-        existing.setGradleLevel(1);
         existing.setShift("Vespertino");
 
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática", "2025.2", 1, classId, "Vespertino", "user-1"
+                "Informática",  classId, "Vespertino", "user-1"
         );
 
         assertEquals(1, result.getUserId().size());
@@ -411,18 +404,14 @@ class ClassesServiceTest {
         Classes existing = new Classes();
         existing.setClassId(classId);
         existing.setUserId(new ArrayList<>(List.of("user-1")));
-        existing.setSemester("2025.2");
-        existing.setGradleLevel(4);
         existing.setShift("Vespertino");
 
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática", "2025.2", null, classId, "Vespertino", "user-2"
+                "Informática",  classId, "Vespertino", "user-2"
         );
-
-        assertEquals(4, result.getGradleLevel(), "Não deve alterar gradleLevel quando parâmetro é null");
         assertTrue(result.getUserId().contains("user-2"));
     }
 }

@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.dto.response;
 
+import br.com.ifrn.AcademicService.models.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,6 @@ public class ResponseStudentPerformanceDTO implements Serializable {
     private float averageScore;
     private float attendenceRate;
     private Integer failedSubjects;
-    private String status;
+    private Status status;
     private Integer totalLowGrades;
 }
