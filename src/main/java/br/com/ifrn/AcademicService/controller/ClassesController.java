@@ -5,6 +5,7 @@ import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
 import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
