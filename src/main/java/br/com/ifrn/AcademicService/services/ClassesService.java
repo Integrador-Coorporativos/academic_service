@@ -6,20 +6,18 @@ import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
+import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
+import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassesService {
@@ -31,7 +29,7 @@ public class ClassesService {
     CoursesService coursesService;
 
     @Autowired
-    StudentPerformanceService studentPerformanceService;
+    StudentPerformanceRepository studentPerformanceRepository;
 
     @Autowired
     ClassMapper classsMapper;
@@ -45,7 +43,7 @@ public class ClassesService {
     @Transactional(readOnly = true)
     @Cacheable(value = "classesCacheAll")
     public List<ResponseClassDTO> getAll() {
-        return classsMapper.toResponseClassDTO(classesRepository.findAll());
+        return classsMapper.toResponseClassDTO(classesRepository.findAllWithCourse());
     }
 
     @Cacheable(value = "classesCache", key = "#id")
@@ -75,39 +73,44 @@ public class ClassesService {
         Classes classe = classesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
 
-        List<StudentDataDTO> classStudents = new ArrayList<>();
-
         List<String> userIds = classe.getUserId();
         if (userIds == null || userIds.isEmpty()) {
             ResponseClassByIdDTO responseEmpty = classsMapper.toResponseClassByDTO(classe);
-            responseEmpty.setStudents(classStudents);
+            responseEmpty.setStudents(new ArrayList<>());
             return responseEmpty;
         }
-        for (String studentId : userIds) {
-            UserRepresentation user = keycloakAdminConfig.findKeycloakUser(studentId);
+        List<StudentPerformance> allPerformances = studentPerformanceRepository.findByStudentIdIn(userIds);
 
-            // CHECK DE SEGURANÇA: Só prossegue se o usuário existir no Keycloak
-            if (user != null && user.getId() != null) {
+        Map<String, StudentPerformance> performanceMap = allPerformances.stream()
+                .collect(Collectors.toMap(
+                        StudentPerformance::getStudentId,
+                        p -> p,
+                        (existing, replacement) -> existing
+                ));
 
-                StudentDataDTO performance = studentPerformanceMapper.toStudentDataDTO(
-                        studentPerformanceService.getStudentPerformanceByStudentId(user.getId())
-                );
+        List<UserRepresentation> keycloakUsers = keycloakAdminConfig.findKeycloakUsersByIds(userIds);
 
-                if (performance != null) {
-                    performance.setName(user.getFirstName());
-                    performance.setRegistration(user.getUsername());
-                    classStudents.add(performance);
-                }
+        List<StudentDataDTO> classStudents = keycloakUsers.stream().map(user -> {
+            StudentPerformance perf = performanceMap.get(user.getId());
+
+            StudentDataDTO dto;
+            if (perf != null) {
+                dto = studentPerformanceMapper.toStudentDataDTO(perf);
             } else {
-                // Opcional: Logar que o usuário X não foi encontrado no Keycloak
-                System.out.println("Aviso: Usuário " + studentId + " não encontrado no Keycloak.");
+                dto = new StudentDataDTO();
+                dto.setStudentId(user.getId());
             }
-        }
 
-        ResponseClassByIdDTO responseClassByIdDTO = classsMapper.toResponseClassByDTO(classe);
-        responseClassByIdDTO.setStudents(classStudents);
+            dto.setName(user.getFirstName());
+            dto.setRegistration(user.getUsername());
 
-        return responseClassByIdDTO;
+            return dto;
+        }).collect(Collectors.toList());
+
+        ResponseClassByIdDTO response = classsMapper.toResponseClassByDTO(classe);
+        response.setStudents(classStudents);
+
+        return response;
     }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
