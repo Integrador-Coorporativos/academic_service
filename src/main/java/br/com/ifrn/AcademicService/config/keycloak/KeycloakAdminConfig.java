@@ -8,6 +8,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Component
 public class KeycloakAdminConfig {
 
@@ -51,6 +55,21 @@ public class KeycloakAdminConfig {
             System.err.println("Erro ao buscar usuário no Keycloak: " + e.getMessage());
             return null;
         }
+    }
+
+    public List<UserRepresentation> findKeycloakUsersByIds(List<String> ids) {
+        Keycloak keycloak = createKeycloakAdminClient();
+        var usersResource = keycloak.realm(envKeycloak.realm()).users();
+        return ids.stream()
+                .map(id -> {
+                    try {
+                        return usersResource.get(id).toRepresentation();
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
 }

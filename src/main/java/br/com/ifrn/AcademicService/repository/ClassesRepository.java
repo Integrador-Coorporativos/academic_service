@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ClassesRepository extends JpaRepository<Classes, Integer> {
+    @Query("SELECT c FROM Classes c JOIN FETCH c.course")
+    List<Classes> findAllWithCourse();
+
     Classes findByClassId(String classId);
 
     List<Classes> findByCourse(Courses course);
