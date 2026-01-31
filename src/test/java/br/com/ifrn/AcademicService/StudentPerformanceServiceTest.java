@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService;
 
 import br.com.ifrn.AcademicService.dto.ImportMessageDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
@@ -115,7 +116,7 @@ class StudentPerformanceServiceTest {
     void updateStudentPerformanceWhenExistsShouldUpdateSaveAndReturnDto() {
         when(repository.findById(1)).thenReturn(Optional.of(entity));
 
-        RequestStudentPerformanceDTO req = mock(RequestStudentPerformanceDTO.class);
+        RequestStudentPerformanceUpdateDTO req = mock(RequestStudentPerformanceUpdateDTO.class);
 
         // save é chamado 2x no código atual
         when(repository.save(entity)).thenReturn(entity);
@@ -138,7 +139,7 @@ class StudentPerformanceServiceTest {
         when(repository.findById(123)).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
-                () -> service.updateStudentPerformance(123, mock(RequestStudentPerformanceDTO.class)));
+                () -> service.updateStudentPerformance(123, mock(RequestStudentPerformanceUpdateDTO.class)));
 
         assertEquals("Not found Student Performance by Id: 123", ex.getMessage());
         verify(repository).findById(123);
@@ -173,9 +174,8 @@ class StudentPerformanceServiceTest {
     void createStudentPerformanceByConsumerMessageDTOWhenStudentExistsShouldUpdate() {
         ImportMessageDTO msg = mock(ImportMessageDTO.class);
 
-        RequestStudentPerformanceDTO req = mock(RequestStudentPerformanceDTO.class);
-        when(req.getStudentId()).thenReturn("S1");
-        when(mapper.toRequestStudentPerformanceByConsumerMessageDto(msg)).thenReturn(req);
+        RequestStudentPerformanceUpdateDTO req = mock(RequestStudentPerformanceUpdateDTO.class);
+        when(mapper.toRequestStudentPerformanceByConsumerMessageDto(msg)).thenReturn(mapper.toRequestStudentPerformanceByConsumerMessageDto(msg));
 
         StudentPerformance existing = new StudentPerformance();
         existing.setId(55);

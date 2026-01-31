@@ -72,4 +72,20 @@ public class KeycloakAdminConfig {
                 .collect(Collectors.toList());
     }
 
+    public List<UserRepresentation> findUsersGroup(String nomeGrupo) {
+        Keycloak keycloak = createKeycloakAdminClient();
+        String grupoId = keycloak.realm(envKeycloak.realm())
+                .groups()
+                .groups().stream()
+                .filter(g -> g.getName().equalsIgnoreCase(nomeGrupo))
+                .findFirst()
+                .orElseThrow()
+                .getId();
+
+        // 2. Retornamos os membros desse grupo
+        return keycloak.realm(envKeycloak.realm())
+                .groups()
+                .group(grupoId)
+                .members();
+    }
 }

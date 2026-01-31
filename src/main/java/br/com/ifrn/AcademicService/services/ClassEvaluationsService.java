@@ -4,8 +4,10 @@ import br.com.ifrn.AcademicService.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.mapper.EvaluationsMapper;
 import br.com.ifrn.AcademicService.models.ClassEvaluations;
+import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
+import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,6 +26,9 @@ public class ClassEvaluationsService {
 
     @Autowired
     EvaluationsMapper evaluationsMapper;
+
+    @Autowired
+    ClassesRepository classesRepository;
 
     @Cacheable(value = "evaluationsCacheAll")
     public List<ResponseClassEvaluationsDTO> getAllEvaluations() {
@@ -51,7 +56,8 @@ public class ClassEvaluationsService {
 
     @Cacheable(value = "evaluationsCacheByClass", key = "#id")
     public List<ResponseClassEvaluationsDTO> getEvaluationsByClassId(Integer id) {
-        List<ClassEvaluations> classEvaluations = classEvaluationsRepository.findByClassId(id);
+        Classes classes = classesRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Class not found"));
+        List<ClassEvaluations> classEvaluations = classEvaluationsRepository.findByClassId(classes.getClassId());
         List<ResponseClassEvaluationsDTO> responseDTO = classEvaluations
                 .stream()
                 .map(evaluationsMapper::toResponseClassEvaluationsDTO)

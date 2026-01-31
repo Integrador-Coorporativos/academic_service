@@ -24,6 +24,7 @@ public class Classes {
     @Column(name = "name",  nullable = false,  length = 255)
     private String name;
     private String shift;
+    private String gradleLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)

@@ -75,7 +75,7 @@ class ClassesServiceTest {
     void testCreate() {
         when(classesRepository.save(any(Classes.class))).thenReturn(turma);
 
-        Classes created = classesService.create(turma);
+        ResponseClassDTO created = classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
 
         assertNotNull(created);
         assertEquals("Matemática", created.getName());
@@ -129,7 +129,7 @@ class ClassesServiceTest {
         when(classesRepository.findById(1)).thenReturn(Optional.of(turma));
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.update(1, updated);
+        ResponseClassDTO result = classesService.update(1, turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
 
         assertEquals("Física", result.getName());
         verify(classesRepository).save(any(Classes.class));
@@ -140,7 +140,7 @@ class ClassesServiceTest {
         when(classesRepository.findById(1)).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> {
-            classesService.update(1, turma);
+            classesService.update(1, turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Classe not found", ex.getMessage());
@@ -176,7 +176,7 @@ class ClassesServiceTest {
         turma.setName("");
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode ser vazio", exception.getMessage());
@@ -187,7 +187,7 @@ class ClassesServiceTest {
         turma.setName(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode ser nulo", exception.getMessage());
@@ -198,7 +198,7 @@ class ClassesServiceTest {
         turma.setName("A".repeat(256));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode exceder 255 caracteres", exception.getMessage());

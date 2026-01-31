@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
+import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
 import br.com.ifrn.AcademicService.dto.response.*;
 import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
@@ -14,8 +15,11 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -106,39 +110,34 @@ public class ClassesService {
 
             return dto;
         }).collect(Collectors.toList());
-
         ResponseClassByIdDTO response = classsMapper.toResponseClassByDTO(classe);
         response.setStudents(classStudents);
-
         return response;
     }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
-    public Classes create(Classes turma) {
-
-        if (turma.getName() == null) {
-            throw new IllegalArgumentException("Nome da turma não pode ser nulo");
-        }
-        if (turma.getName().isEmpty()) {
-            throw new IllegalArgumentException("Nome da turma não pode ser vazio");
-        }
-        if (turma.getName().length() > 255) {
-            throw new IllegalArgumentException("Nome da turma não pode exceder 255 caracteres");
-        }
-
-        return classesRepository.save(turma);
+    public ResponseClassDTO create(Integer courseId, RequestClassDTO requestClassDTO) {
+        Courses curso = classesRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!")).getCourse();
+        Classes classe = classsMapper.toClassDTO(requestClassDTO);
+        classe.setCourse(curso);
+        ResponseClassDTO response = classsMapper.toResponseClassDTO(classesRepository.save(classe));
+        return response;
     }
 
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
-    public Classes update(Integer id, Classes turmaDetails) {
+    public ResponseClassDTO update(Integer id, Integer courseId, RequestClassDTO classDetails) {
         Classes turma = classesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
-
-        turma.setName(turmaDetails.getName());
-        turma.setCourse(turmaDetails.getCourse());
-
-        return classesRepository.save(turma);
+        Courses curso = classesRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!")).getCourse();
+        turma.setName(curso.getName() + "_" + classDetails.getClassId());
+        turma.setCourse(curso);
+        turma.setShift(classDetails.getShift());
+        turma.setGradleLevel(classDetails.getGradleLevel());
+        ResponseClassDTO responseClassDTO = classsMapper.toResponseClassDTO(classesRepository.save(turma));
+        return responseClassDTO;
     }
 
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)

@@ -11,7 +11,6 @@ import java.util.List;
 public class ResponseClassByIdDTO {
     private int id;
     private String name;
-    private String semester;
     private int gradleLevel;
     private String shift;
     private ResponseCourseDTO course;

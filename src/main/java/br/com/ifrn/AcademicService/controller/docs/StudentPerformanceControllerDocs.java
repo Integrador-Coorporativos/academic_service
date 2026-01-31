@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.controller.docs;
 
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
@@ -75,6 +76,6 @@ public interface StudentPerformanceControllerDocs {
     })
     public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(
             @PathVariable Integer id,
-            @RequestBody RequestStudentPerformanceDTO dto
+            @RequestBody RequestStudentPerformanceUpdateDTO dto
     );
 }

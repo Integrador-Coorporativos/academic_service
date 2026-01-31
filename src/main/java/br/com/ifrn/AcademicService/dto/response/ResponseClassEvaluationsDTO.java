@@ -14,7 +14,7 @@ public class ResponseClassEvaluationsDTO implements Serializable {
     private Integer id;
     private String classId;
     private String professorId;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM. 'de' yyyy", locale = "pt-BR")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
     private float averageScore;
