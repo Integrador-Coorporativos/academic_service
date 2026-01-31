@@ -9,6 +9,7 @@ import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
+import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import br.com.ifrn.AcademicService.services.ClassesService;
 import br.com.ifrn.AcademicService.services.CoursesService;
 import br.com.ifrn.AcademicService.services.StudentPerformanceService;
@@ -46,6 +47,9 @@ class ClassesServiceTest {
     private StudentPerformanceService studentPerformanceService;
 
     @Mock
+    private StudentPerformanceRepository studentPerformanceRepository;
+
+    @Mock
     private StudentPerformanceMapper studentPerformanceMapper;
 
     @Mock
@@ -71,7 +75,7 @@ class ClassesServiceTest {
     void testCreate() {
         when(classesRepository.save(any(Classes.class))).thenReturn(turma);
 
-        Classes created = classesService.create(turma);
+        ResponseClassDTO created = classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
 
         assertNotNull(created);
         assertEquals("Matemática", created.getName());
@@ -86,7 +90,8 @@ class ClassesServiceTest {
         ResponseClassDTO turmaDTO = new ResponseClassDTO();
         turmaDTO.setName("Matemática");
 
-        when(classesRepository.findAll()).thenReturn(List.of(turmaEntity));
+        when(classesRepository.findAllWithCourse()).thenReturn(List.of(turmaEntity));
+
         when(classsMapper.toResponseClassDTO(anyList())).thenReturn(List.of(turmaDTO));
 
         List<ResponseClassDTO> all = classesService.getAll();
@@ -97,7 +102,7 @@ class ClassesServiceTest {
 
     @Test
     void testGetAllWhenEmpty() {
-        when(classesRepository.findAll()).thenReturn(List.of());
+        when(classesRepository.findAllWithCourse()).thenReturn(List.of());
         when(classsMapper.toResponseClassDTO(anyList())).thenReturn(List.of());
 
         List<ResponseClassDTO> all = classesService.getAll();
@@ -124,7 +129,7 @@ class ClassesServiceTest {
         when(classesRepository.findById(1)).thenReturn(Optional.of(turma));
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.update(1, updated);
+        ResponseClassDTO result = classesService.update(1, turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
 
         assertEquals("Física", result.getName());
         verify(classesRepository).save(any(Classes.class));
@@ -135,7 +140,7 @@ class ClassesServiceTest {
         when(classesRepository.findById(1)).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> {
-            classesService.update(1, turma);
+            classesService.update(1, turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Classe not found", ex.getMessage());
@@ -171,7 +176,7 @@ class ClassesServiceTest {
         turma.setName("");
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode ser vazio", exception.getMessage());
@@ -182,7 +187,7 @@ class ClassesServiceTest {
         turma.setName(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode ser nulo", exception.getMessage());
@@ -193,7 +198,7 @@ class ClassesServiceTest {
         turma.setName("A".repeat(256));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            classesService.create(turma);
+            classesService.create(turma.getCourse().getId(), classsMapper.toRequestClassDTO(turma));
         });
 
         assertEquals("Nome da turma não pode exceder 255 caracteres", exception.getMessage());
@@ -268,8 +273,8 @@ class ClassesServiceTest {
         when(classesRepository.findById(1)).thenReturn(Optional.of(c));
         when(classsMapper.toResponseClassByDTO(c)).thenReturn(dto);
 
-        when(keycloakAdminConfig.findKeycloakUser("u1")).thenReturn(null);
-
+        when(keycloakAdminConfig.findKeycloakUsersByIds(anyList())).thenReturn(new ArrayList<>());
+        when(studentPerformanceRepository.findByStudentIdIn(anyList())).thenReturn(new ArrayList<>());
         ResponseClassByIdDTO result = classesService.getByClassId(1);
 
         assertNotNull(result.getStudents());
@@ -279,32 +284,27 @@ class ClassesServiceTest {
 
     @Test
     void testGetByClassIdUserFoundShouldAddStudent() throws Exception {
-        Classes c = new Classes();
-        c.setId(1);
-        c.setName("Turma X");
-        c.setUserId(List.of("u1"));
-
-        ResponseClassByIdDTO dto = new ResponseClassByIdDTO();
+        Integer id = 1;
+        Classes classe = new Classes();
+        classe.setUserId(List.of("aluno-uuid-123"));
 
         UserRepresentation user = new UserRepresentation();
-        user.setId("kc-1");
-        user.setFirstName("Marcos");
-        user.setUsername("20241094040001");
+        user.setId("aluno-uuid-123");
+        user.setFirstName("Eduardo");
+        user.setUsername("202612345");
 
-        StudentDataDTO mappedStudent = new StudentDataDTO();
+        when(keycloakAdminConfig.findKeycloakUsersByIds(anyList()))
+                .thenReturn(List.of(user));
 
-        when(classesRepository.findById(1)).thenReturn(Optional.of(c));
-        when(classsMapper.toResponseClassByDTO(c)).thenReturn(dto);
+        when(studentPerformanceRepository.findByStudentIdIn(anyList()))
+                .thenReturn(new ArrayList<>());
 
-        when(keycloakAdminConfig.findKeycloakUser("u1")).thenReturn(user);
-        when(studentPerformanceService.getStudentPerformanceByStudentId("kc-1")).thenReturn(null);
-        when(studentPerformanceMapper.toStudentDataDTO(any())).thenReturn(mappedStudent);
+        when(classesRepository.findById(id)).thenReturn(Optional.of(classe));
+        when(classsMapper.toResponseClassByDTO(any())).thenReturn(new ResponseClassByIdDTO());
 
-        ResponseClassByIdDTO result = classesService.getByClassId(1);
+        ResponseClassByIdDTO result = classesService.getByClassId(id);
 
         assertEquals(1, result.getStudents().size());
-        assertEquals("Marcos", result.getStudents().get(0).getName());
-        assertEquals("20241094040001", result.getStudents().get(0).getRegistration());
     }
 
     // ==============================

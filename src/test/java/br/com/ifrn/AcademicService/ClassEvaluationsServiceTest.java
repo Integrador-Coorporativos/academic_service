@@ -98,7 +98,7 @@ class ClassEvaluationsServiceTest {
 
     @Test
     void getEvaluationsByClassIdShouldMapEntityList() {
-        when(classEvaluationsRepository.findByClassId(10))
+        when(classEvaluationsRepository.findByClassId("classId"))
                 .thenReturn(List.of(entity1, entity2));
 
         ResponseClassEvaluationsDTO dto1 = mock(ResponseClassEvaluationsDTO.class);
@@ -111,7 +111,7 @@ class ClassEvaluationsServiceTest {
                 service.getEvaluationsByClassId(10);
 
         assertEquals(2, result.size());
-        verify(classEvaluationsRepository).findByClassId(10);
+        verify(classEvaluationsRepository).findByClassId("classId");
         verify(evaluationsMapper).toResponseClassEvaluationsDTO(entity1);
         verify(evaluationsMapper).toResponseClassEvaluationsDTO(entity2);
         verifyNoMoreInteractions(classEvaluationsRepository, evaluationsMapper);

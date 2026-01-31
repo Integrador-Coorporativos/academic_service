@@ -13,10 +13,10 @@ import java.util.List;
 public class ResponseClassDTO implements Serializable {
     private int id;
     private String name;
-    private String semester;
+    private String gradleLevel;
     private String shift;
-    private Courses course;
-    private List<ClassComments> comments;
-    private List<String> userId;
+    private ResponseCourseDTO course;
+    //private List<ResponseCommentDTO> comments;
+    //private List<String> userId;
     private String classId;
 }

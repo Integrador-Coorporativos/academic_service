@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ClassEvaluationsRepository extends JpaRepository<ClassEvaluations, Integer> {
-    List<ClassEvaluations> findByClassId(Integer classId);
+    List<ClassEvaluations> findByClassId(String classId);
     @Query("SELECT AVG(c.frequencyScore) as avgFrequency, AVG(c.unifirmScore) as avgUniform, " +
             "AVG(c.behaviorScore) as avgBehavior, AVG(c.participationScore) as avgParticipation, " +
             "AVG(c.performanceScore) as avgPerformance, AVG(c.cellPhoneUseScore) as avgCellPhone, " +

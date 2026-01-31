@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.dto.ImportMessageDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
@@ -126,14 +127,18 @@ public class StudentPerformanceService {
 
     @CacheEvict(value = "studentPerformanceCacheAll", allEntries = true)
     public ResponseStudentPerformanceDTO createStudentPerformance(RequestStudentPerformanceDTO requestDTO) {
-        StudentPerformance studentPerformance = mapper.toEntity(requestDTO);
+        StudentPerformance studentPerformance = studentPerformanceRepository.findStudentPerformanceByStudentId(requestDTO.getStudentId());
+        if (studentPerformance != null) {
+            throw  new EntityNotFoundException("Já existe uma avaliação cadastrada para esse aluno!");
+        }
+        studentPerformance = mapper.toEntity(requestDTO);
         studentPerformance = studentPerformanceRepository.save(studentPerformance);
         ResponseStudentPerformanceDTO responseDto = mapper.toResponseDto(studentPerformance);
         return responseDto;
     }
 
     @CacheEvict(value = {"studentPerformanceCache", "studentPerformanceCacheAll"}, allEntries = true)
-    public ResponseStudentPerformanceDTO updateStudentPerformance(Integer id, RequestStudentPerformanceDTO dto) {
+    public ResponseStudentPerformanceDTO updateStudentPerformance(Integer id, RequestStudentPerformanceUpdateDTO dto) {
         StudentPerformance studentPerformance = studentPerformanceRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Not found Student Performance by Id: " + id));
         mapper.updateEntityFromDto(dto, studentPerformance);
@@ -155,7 +160,7 @@ public class StudentPerformanceService {
         if (studentPerformance == null) {
             responseDto = createStudentPerformance(studentPerformanceDTO);
         }else{
-            responseDto = updateStudentPerformance(studentPerformance.getId(), studentPerformanceDTO);
+            responseDto = updateStudentPerformance(studentPerformance.getId(), mapper.toRequestStudentPerformanceUpdateDto(studentPerformanceDTO));
         }
         return responseDto;
     }

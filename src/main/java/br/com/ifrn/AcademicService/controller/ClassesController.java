@@ -5,17 +5,14 @@ import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
 import br.com.ifrn.AcademicService.dto.response.ClassPanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
-import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
-import br.com.ifrn.AcademicService.models.Courses;
-import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.services.ClassesService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -52,24 +49,13 @@ public class ClassesController implements ClassesControllerDocs {
     }
 
     @PostMapping
-    public ResponseEntity<Classes> create(@RequestParam Integer courseId, @RequestBody RequestClassDTO classDTO) {
-        Courses curso = classesService.getById(courseId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso não encontrado!")).getCourse();
-
-        Classes createdClasses = new Classes();
-        createdClasses.setCourse(curso);
-        createdClasses.setName(classDTO.getName());
-        createdClasses.setClassId(classDTO.getClassId());
-        createdClasses.setShift(classDTO.getShift());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(classesService.create(createdClasses));
+    public ResponseEntity<ResponseClassDTO> create(@RequestParam Integer courseId, @RequestBody RequestClassDTO classDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(classesService.create(courseId, classDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Classes> update(@PathVariable Integer id, @RequestBody Classes classes) {
-        Optional<Classes> updatedClasses = Optional.ofNullable(classesService.update(id, classes));
-        return updatedClasses.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<ResponseClassDTO> update(@PathVariable Integer id, @PathVariable Integer courseId, @RequestBody RequestClassDTO classes) {
+        return ResponseEntity.status(HttpStatus.OK).body(classesService.update(id, courseId, classes));
     }
 
     @DeleteMapping("/{id}")

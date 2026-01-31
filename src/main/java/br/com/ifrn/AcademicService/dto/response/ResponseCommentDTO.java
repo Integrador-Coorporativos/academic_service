@@ -18,4 +18,8 @@ public class ResponseCommentDTO implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM. 'de' yyyy", locale = "pt-BR")
     private LocalDate createdAt;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM. 'de' yyyy", locale = "pt-BR")
+    private LocalDate updatedAt;
 }

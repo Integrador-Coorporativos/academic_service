@@ -1,5 +1,8 @@
 package br.com.ifrn.AcademicService;
 
+import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseCourseDTO;
+import br.com.ifrn.AcademicService.mapper.CoursesMapper;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.services.CoursesService;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -25,6 +29,9 @@ class CoursesServiceTest {
     @InjectMocks
     private CoursesService coursesService;
 
+    @Autowired
+    CoursesMapper coursesMapper;
+
     private Courses course;
 
     @BeforeEach
@@ -39,8 +46,9 @@ class CoursesServiceTest {
     void testCreate() {
         when(coursesRepository.findByName(course.getName())).thenReturn(null);
         when(coursesRepository.save(any(Courses.class))).thenReturn(course);
+        RequestCourseDTO  requestCourseDTO = coursesMapper.toRequestCourseDTO(course);
 
-        Courses created = coursesService.create(course);
+        ResponseCourseDTO created = coursesService.create(requestCourseDTO);
 
         assertNotNull(created);
         assertEquals("Análise de Sistemas", created.getName());
@@ -50,7 +58,7 @@ class CoursesServiceTest {
     void testGetAll() {
         when(coursesRepository.findAll()).thenReturn(List.of(course));
 
-        List<Courses> all = coursesService.getAll();
+        List<ResponseCourseDTO> all = coursesService.getAll();
 
         assertEquals(1, all.size());
     }
@@ -59,9 +67,9 @@ class CoursesServiceTest {
     void testGetById() {
         when(coursesRepository.findById(1)).thenReturn(Optional.of(course));
 
-        Optional<Courses> result = coursesService.getById(1);
+        ResponseCourseDTO result = coursesService.getById(1);
 
-        assertTrue(result.isPresent());
+        assertTrue(result != null);
     }
 
     @Test
@@ -69,6 +77,7 @@ class CoursesServiceTest {
         // GIVEN
         Courses updatedDetails = new Courses();
         updatedDetails.setName("Informática"); // Nome válido, não lança erro!
+        RequestCourseDTO requestCourseDTO = coursesMapper.toRequestCourseDTO(updatedDetails);
 
         // "turma" ou "course" (o que está no banco)
         Courses courseInDb = new Courses();
@@ -79,7 +88,7 @@ class CoursesServiceTest {
         when(coursesRepository.save(any(Courses.class))).thenAnswer(i -> i.getArgument(0));
 
         // WHEN
-        Courses result = coursesService.update(1, updatedDetails);
+        ResponseCourseDTO result = coursesService.update(1, requestCourseDTO);
 
         // THEN
         assertEquals("Informática", result.getName());
@@ -109,7 +118,7 @@ class CoursesServiceTest {
         course.setName("");
 
         assertThrows(IllegalArgumentException.class,
-                () -> coursesService.create(course));
+                () -> coursesService.create(coursesMapper.toRequestCourseDTO(course)));
     }
 
     @Test
@@ -117,7 +126,7 @@ class CoursesServiceTest {
         course.setName(null);
 
         assertThrows(IllegalArgumentException.class,
-                () -> coursesService.create(course));
+                () -> coursesService.create(coursesMapper.toRequestCourseDTO(course)));
 
         verify(coursesRepository, never()).save(any());
     }
@@ -127,7 +136,7 @@ class CoursesServiceTest {
         course.setName(null);
 
         assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, course));
+                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
     }
 
     @Test
@@ -135,7 +144,7 @@ class CoursesServiceTest {
         course.setName("");
 
         assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, course));
+                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
     }
 
     @Test
@@ -143,7 +152,7 @@ class CoursesServiceTest {
         course.setName("A".repeat(256));
 
         assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, course));
+                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
     }
 
     @Test
@@ -151,7 +160,7 @@ class CoursesServiceTest {
         when(coursesRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class,
-                () -> coursesService.update(1, course));
+                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestCommentDTO implements Serializable {
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotBlank(message = "Comentário não pode ser vazio ou nulo")
+    @Size(min = 1, max = 255, message = "Comentário não pode exceder 255 caracteres")
     private String comment;
 }

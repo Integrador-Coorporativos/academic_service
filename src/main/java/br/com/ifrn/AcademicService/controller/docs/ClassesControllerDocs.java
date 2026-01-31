@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.util.List;
@@ -34,7 +35,7 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado"),
             @ApiResponse(responseCode = "409", description = "Conflito ao criar turma"),
     })
-    ResponseEntity<Classes> create(Integer courseId, RequestClassDTO classDTO);
+    ResponseEntity<ResponseClassDTO> create(Integer courseId, RequestClassDTO classDTO);
 
     @Operation(summary = "Recupera detalhes de uma turma específica")
     @ApiResponses(value = {
@@ -51,7 +52,7 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
     })
-    ResponseEntity<Classes> update(Integer id, Classes classes);
+    ResponseEntity<ResponseClassDTO> update(Integer id, Integer courseId, RequestClassDTO classes);
 
     @Operation(summary = "Remove uma turma do sistema")
     @ApiResponses(value = {

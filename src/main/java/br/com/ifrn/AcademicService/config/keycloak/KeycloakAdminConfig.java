@@ -8,6 +8,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Component
 public class KeycloakAdminConfig {
 
@@ -53,4 +57,35 @@ public class KeycloakAdminConfig {
         }
     }
 
+    public List<UserRepresentation> findKeycloakUsersByIds(List<String> ids) {
+        Keycloak keycloak = createKeycloakAdminClient();
+        var usersResource = keycloak.realm(envKeycloak.realm()).users();
+        return ids.stream()
+                .map(id -> {
+                    try {
+                        return usersResource.get(id).toRepresentation();
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserRepresentation> findUsersGroup(String nomeGrupo) {
+        Keycloak keycloak = createKeycloakAdminClient();
+        String grupoId = keycloak.realm(envKeycloak.realm())
+                .groups()
+                .groups().stream()
+                .filter(g -> g.getName().equalsIgnoreCase(nomeGrupo))
+                .findFirst()
+                .orElseThrow()
+                .getId();
+
+        // 2. Retornamos os membros desse grupo
+        return keycloak.realm(envKeycloak.realm())
+                .groups()
+                .group(grupoId)
+                .members();
+    }
 }

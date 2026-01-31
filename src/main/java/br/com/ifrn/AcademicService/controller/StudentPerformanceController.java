@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.StudentPerformanceControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
 import br.com.ifrn.AcademicService.services.StudentPerformanceService;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -40,7 +40,7 @@ public class StudentPerformanceController implements StudentPerformanceControlle
         return ResponseEntity.status(HttpStatus.CREATED).body(studentPerformanceService.createStudentPerformance(performanceDTO));
     }
     @PutMapping("/class/{id}")
-    public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(@PathVariable Integer id, @RequestBody RequestStudentPerformanceDTO dto) {
+    public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(@PathVariable Integer id, @RequestBody RequestStudentPerformanceUpdateDTO dto) {
         return ResponseEntity.ok().body(studentPerformanceService.updateStudentPerformance(id, dto));
     }
 }
