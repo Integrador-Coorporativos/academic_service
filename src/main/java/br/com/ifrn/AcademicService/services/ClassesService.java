@@ -166,10 +166,7 @@ public class ClassesService {
         return true;
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "classesCacheAll", key = "#professorId"),
-            @CacheEvict(value = "getMyClasses", key = "#professorId")
-    })
+    @CacheEvict(value = {"classesCacheAll", "getMyClasses", "classesCache"}, allEntries = true)
     public ResponseClassDTO addProfessorToClass(Integer id, String professorId) {
         Classes classe = classesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
         if (classe.getProfessors().contains(professorId)){
