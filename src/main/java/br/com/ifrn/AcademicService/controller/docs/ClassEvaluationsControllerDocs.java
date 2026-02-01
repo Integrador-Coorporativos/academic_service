@@ -57,7 +57,7 @@ public interface ClassEvaluationsControllerDocs {
             @ApiResponse(responseCode = "409", description = "Conflito - avaliação já cadastrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, String classId, Authentication authentication);
+    public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(@RequestBody RequestClassEvaluationsDTO dto, Integer id, Authentication authentication);
 
     @Operation(summary = "Atualizar avaliação",
             description = "Atualiza os dados de uma avaliação existente.")

@@ -40,12 +40,12 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
     @PostMapping
     public ResponseEntity<ResponseClassEvaluationsDTO> createEvaluation(
             @RequestBody RequestClassEvaluationsDTO dto,
-            @RequestParam String classId,
+            @RequestParam Integer id,
             Authentication authentication
     ) {
         String professorId = getProfessorId(authentication);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(classEvaluationsService.createEvaluation(dto, classId, professorId));
+                .body(classEvaluationsService.createEvaluation(dto, id, professorId));
     }
 
     @PutMapping("/{id}")

@@ -94,7 +94,7 @@ class ClassesServiceTest {
 
         when(classsMapper.toResponseClassDTO(anyList())).thenReturn(List.of(turmaDTO));
 
-        List<ResponseClassDTO> all = classesService.getAll();
+        List<ResponseClassDTO> all = classesService.getAll("professorId");
 
         assertEquals(1, all.size());
         assertEquals("Matemática", all.get(0).getName());
@@ -105,7 +105,7 @@ class ClassesServiceTest {
         when(classesRepository.findAllWithCourse()).thenReturn(List.of());
         when(classsMapper.toResponseClassDTO(anyList())).thenReturn(List.of());
 
-        List<ResponseClassDTO> all = classesService.getAll();
+        List<ResponseClassDTO> all = classesService.getAll("professerId");
 
         assertNotNull(all);
         assertTrue(all.isEmpty());

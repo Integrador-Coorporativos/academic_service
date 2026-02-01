@@ -139,7 +139,7 @@ class ClassEvaluationsServiceTest {
                 .thenReturn(responseDTO);
 
         ResponseClassEvaluationsDTO result =
-                service.createEvaluation(req, "CLASS-1", "professorid");
+                service.createEvaluation(req, 1, "professorid");
 
         assertSame(responseDTO, result);
 
@@ -148,7 +148,7 @@ class ClassEvaluationsServiceTest {
         verify(classEvaluationsRepository).save(captor.capture());
 
         ClassEvaluations saved = captor.getValue();
-        assertEquals("CLASS-1", saved.getClassId());
+        assertEquals(1, saved.getClassId());
         assertEquals("professorid", saved.getProfessorId());
         assertSame(criteria, saved.getCriteria());
         assertEquals(LocalDate.now(), saved.getDate());
@@ -177,7 +177,7 @@ class ClassEvaluationsServiceTest {
         when(evaluationsMapper.toResponseClassEvaluationsDTO(any()))
                 .thenReturn(mock(ResponseClassEvaluationsDTO.class));
 
-        service.createEvaluation(req, "CLASS-2", "professorid2");
+        service.createEvaluation(req, 2, "professorid2");
 
         verify(criteria).setAverageScore(5f);
     }

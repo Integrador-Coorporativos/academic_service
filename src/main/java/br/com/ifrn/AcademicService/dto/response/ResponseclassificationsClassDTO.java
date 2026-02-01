@@ -20,4 +20,5 @@ public class ResponseclassificationsClassDTO {
     private float performanceScore; //desempenho
     private float cellPhoneUseScore; //uso de celular
     private float averageScore; //pontuação média da avaliação
+    private ResponseClassificationsRankDTO rank;
 }
