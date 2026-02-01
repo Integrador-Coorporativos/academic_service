@@ -29,7 +29,7 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "200", description = "Lista de turmas retornada com sucesso"),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
     })
-    ResponseEntity<List<ResponseClassDTO>> getAll();
+    ResponseEntity<List<ResponseClassDTO>> getAll(Authentication authentication);
 
     @Operation(summary = "Lista todas as turmas do professor logado")
     @ApiResponses(value = {

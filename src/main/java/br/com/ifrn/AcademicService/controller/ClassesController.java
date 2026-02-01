@@ -28,8 +28,9 @@ public class ClassesController implements ClassesControllerDocs {
     private ClassesService classesService;
 
     @GetMapping
-    public ResponseEntity<List<ResponseClassDTO>> getAll() {
-        List<ResponseClassDTO> classesList = classesService.getAll();
+    public ResponseEntity<List<ResponseClassDTO>> getAll(Authentication authentication) {
+        String professorId = getProfessorId(authentication);
+        List<ResponseClassDTO> classesList = classesService.getAll(professorId);
         if (classesList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
