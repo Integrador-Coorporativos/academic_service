@@ -46,7 +46,8 @@ public class OpenApiConfig {
                         new Tag().name("Desempenho").description("Operações relacionadas a Desempenho"),
                         new Tag().name("Classes").description("Operações relacionadas a Turmas"),
                         new Tag().name("Courses").description("Operações relacionadas a Cursos"),
-                        new Tag().name("Comments").description("Operações relacionadas a Comentários")
+                        new Tag().name("Comments").description("Operações relacionadas a Comentários"),
+                        new Tag().name("Painel de Controle").description("Operações relacionadas ao Painel de Controle")
                 ))
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")

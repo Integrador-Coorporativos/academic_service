@@ -43,15 +43,7 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
             @RequestParam String classId,
             Authentication authentication
     ) {
-        String professorId = null;
-
-        if (authentication.getPrincipal() instanceof Jwt jwt) {
-            professorId = jwt.getSubject();
-        } else if (authentication.getPrincipal() instanceof OidcUser oidc) {
-            professorId = oidc.getSubject();
-        } else {
-            professorId = authentication.getName();
-        }
+        String professorId = getProfessorId(authentication);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(classEvaluationsService.createEvaluation(dto, classId, professorId));
     }
@@ -65,5 +57,18 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
     public ResponseEntity<?> deleteEvaluation(@PathVariable Integer id) {
         classEvaluationsService.deleteEvaluation(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private static String getProfessorId(Authentication authentication) {
+        String professorId = null;
+
+        if (authentication.getPrincipal() instanceof Jwt jwt) {
+            professorId = jwt.getSubject();
+        } else if (authentication.getPrincipal() instanceof OidcUser oidc) {
+            professorId = oidc.getSubject();
+        } else {
+            professorId = authentication.getName();
+        }
+        return professorId;
     }
 }

@@ -6,10 +6,14 @@ import br.com.ifrn.AcademicService.dto.response.ResponseClassByIdDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassDTO;
 import br.com.ifrn.AcademicService.models.Classes;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
@@ -26,6 +30,17 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
     })
     ResponseEntity<List<ResponseClassDTO>> getAll();
+
+    @Operation(summary = "Lista todas as turmas do professor logado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de turmas retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseClassDTO.class)))),
+            @ApiResponse(responseCode = "204", description = "Nenhuma turma encontrada para o professor"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+    })
+
+    public ResponseEntity<List<ResponseClassDTO>> getMyClasses(Authentication authentication);
+
 
     @Operation(summary = "Cria uma nova turma")
     @ApiResponses(value = {
@@ -73,4 +88,14 @@ public interface ClassesControllerDocs {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     public ResponseEntity<List<ClassPanelResponseDTO>> getClassesForPanel();
+
+    @Operation(summary = "Adiciona o professor logado a uma turma específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Professor adicionado à turma com sucesso",
+                    content = @Content(schema = @Schema(implementation = ResponseClassDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+            @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
+            @ApiResponse(responseCode = "400", description = "Erro na adição do professor à turma")
+    })
+    public ResponseEntity<ResponseClassDTO> addProfessorToClass(@PathVariable Integer id, Authentication authentication);
 }
