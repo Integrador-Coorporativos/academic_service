@@ -9,17 +9,16 @@ import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
+import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,9 @@ public class ClassesService {
 
     @Autowired
     ClassesRepository classesRepository;
+
+    @Autowired
+    CoursesRepository coursesRepository;
 
     @Autowired
     CoursesService coursesService;
@@ -48,6 +50,10 @@ public class ClassesService {
     @Cacheable(value = "classesCacheAll")
     public List<ResponseClassDTO> getAll() {
         return classsMapper.toResponseClassDTO(classesRepository.findAllWithCourse());
+    }
+
+    public List<ResponseClassDTO> getMyClasses(String professorId) {
+        return classsMapper.toResponseClassDTO(classesRepository.findClassesByProfessor(professorId));
     }
 
     @Cacheable(value = "classesCache", key = "#id")
@@ -117,10 +123,11 @@ public class ClassesService {
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
     public ResponseClassDTO create(Integer courseId, RequestClassDTO requestClassDTO) {
-        Courses curso = classesRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!")).getCourse();
+        Courses curso = coursesRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!"));
         Classes classe = classsMapper.toClassDTO(requestClassDTO);
         classe.setCourse(curso);
+        classe.setName(classe.getCourse().getName() + "_" + classe.getClassId());
         ResponseClassDTO response = classsMapper.toResponseClassDTO(classesRepository.save(classe));
         return response;
     }
@@ -147,6 +154,16 @@ public class ClassesService {
         }
         classesRepository.deleteById(id);
         return true;
+    }
+
+    public ResponseClassDTO addProfessorToClass(Integer id, String professorId) {
+        Classes classe = classesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
+        if (classe.getProfessors().contains(professorId)){
+            classe.getProfessors().remove(professorId);
+        }else {
+            classe.getProfessors().add(professorId);
+        }
+        return classsMapper.toResponseClassDTO(classesRepository.save(classe));
     }
 
 

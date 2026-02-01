@@ -43,4 +43,7 @@ public class Classes {
 
     private String classId; //id da turma fornecido na planilha
 
+    @ElementCollection
+    private List<String> professors;
+
 }

@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,16 @@ public class ClassesController implements ClassesControllerDocs {
     @GetMapping
     public ResponseEntity<List<ResponseClassDTO>> getAll() {
         List<ResponseClassDTO> classesList = classesService.getAll();
+        if (classesList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(classesList);
+    }
+
+    @GetMapping("/my-classes")
+    public ResponseEntity<List<ResponseClassDTO>> getMyClasses(Authentication authentication) {
+        String professorId = getProfessorId(authentication);
+        List<ResponseClassDTO> classesList = classesService.getMyClasses(professorId);
         if (classesList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -67,4 +80,24 @@ public class ClassesController implements ClassesControllerDocs {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @PatchMapping("/{id}/professor")
+    public ResponseEntity<ResponseClassDTO> addProfessorToClass(@PathVariable Integer id, Authentication authentication) {
+        String professorId = getProfessorId(authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(classesService. addProfessorToClass(id, professorId));
+    }
+
+    private static String getProfessorId(Authentication authentication) {
+        String professorId = null;
+
+        if (authentication.getPrincipal() instanceof Jwt jwt) {
+            professorId = jwt.getSubject();
+        } else if (authentication.getPrincipal() instanceof OidcUser oidc) {
+            professorId = oidc.getSubject();
+        } else {
+            professorId = authentication.getName();
+        }
+        return professorId;
+    }
+
 }
