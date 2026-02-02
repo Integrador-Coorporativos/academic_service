@@ -5,6 +5,7 @@ import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDT
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
+import br.com.ifrn.AcademicService.models.enums.StepName;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -47,7 +48,7 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "404", description = "Turma não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year);
+    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year, StepName bimestre);
 
     @Operation(
             summary = "Cadastrar desempenho do Aluno",

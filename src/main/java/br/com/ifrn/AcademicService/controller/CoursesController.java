@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.CoursesControllerDocs;
+import br.com.ifrn.AcademicService.dto.StartPeriodDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
 import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseCourseDTO;

@@ -7,8 +7,6 @@ import br.com.ifrn.AcademicService.dto.response.ResponseProfessorPanelDTO;
 import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.models.EvaluationPeriod;
 import br.com.ifrn.AcademicService.services.PainelControleService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,17 +32,14 @@ public class PainelControleController implements PainelControleControllerDocs {
 
     @PostMapping("/evaluation-periods/start")
     public ResponseEntity<String> startNewEvaluationCycle(@RequestBody StartPeriodDTO dto) {
-        // LOG DE SEGURANÇA
-        System.out.println("DTO NO CONTROLLER: " + dto.getStepName() + " | " + dto.getYear());
-
         try {
-            painelControleService.startNewPeriod(dto);
+             painelControleService.startNewPeriod(dto);
             return ResponseEntity.ok("Sucesso!");
         } catch (Exception e) {
-            e.printStackTrace(); // ISSO VAI MOSTRAR O ERRO REAL NO CONSOLE DO SEU IDE
-            return ResponseEntity.internalServerError().body("ERRO REAL: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("ERRO: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/evaluation-periods/active")
     public ResponseEntity<EvaluationPeriod> getActivePeriod() {

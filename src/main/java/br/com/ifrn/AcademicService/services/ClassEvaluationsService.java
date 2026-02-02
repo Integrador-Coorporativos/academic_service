@@ -46,7 +46,6 @@ public class ClassEvaluationsService {
         List<ResponseClassEvaluationsDTO> responseDTOList = classEvaluations.stream()
                 .map(evaluationsMapper::toResponseClassEvaluationsDTO)
                 .collect(Collectors.toCollection(ArrayList::new));
-
         return responseDTOList;
     }
 
@@ -74,26 +73,23 @@ public class ClassEvaluationsService {
 
     @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCacheByClass"}, key = "#id")
     public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, Integer id, String professorId) {
-        EvaluationPeriod activePeriod = painelControleService.getActivePeriod()
-                .orElseThrow(() -> new BusinessRuleException("O período de avaliações está fechado no momento!"));
-        if (activePeriod.isExpired()) {
-            painelControleService.manuallyEndCurrentPeriod();
-            throw new BusinessRuleException("O prazo para esta etapa expirou!");
-        }
+        painelControleService.verifyActivePeriod();
         Classes classes = classesRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Class not found"));
+
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
         ClassEvaluations classEvaluations = new  ClassEvaluations();
         classEvaluations.setClassId(classes.getClassId());
         classEvaluations.setProfessorId(professorId);
         classEvaluations.setCriteria(evaluations);
         classEvaluations.setDate(LocalDate.now());
-        evaluations.setAverageScore(calcAverageScore(dto));
+        classEvaluations.setEvaluationPeriod(painelControleService.getActivePeriod());
         classEvaluations = classEvaluationsRepository.save(classEvaluations);
         return evaluationsMapper.toResponseClassEvaluationsDTO(classEvaluations);
     }
 
     @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#id")
     public ResponseClassEvaluationsDTO updateEvaluation(Integer id, RequestClassEvaluationsDTO dto) {
+        painelControleService.verifyActivePeriod();
         ClassEvaluations entity = classEvaluationsRepository.findById(id)
                 .orElseThrow(()-> new NoSuchElementException("ClassEvaluations not found with id: " + id));
 

@@ -5,17 +5,16 @@ import br.com.ifrn.AcademicService.dto.ProfessorStatsView;
 import br.com.ifrn.AcademicService.dto.StartPeriodDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseProfessorPanelDTO;
 import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
+import br.com.ifrn.AcademicService.exception.BusinessRuleException;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.models.EvaluationPeriod;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.repository.EvaluationPeriodRepository;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -75,22 +74,17 @@ public class PainelControleService {
                 .toList();
     }
 
-
-
-
     @Transactional
     public void startNewPeriod(StartPeriodDTO data) {
         repository.deactivateAllActivePeriods();
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime deadline = start.plusWeeks(1);
-        EvaluationPeriod newPeriod = EvaluationPeriod.builder()
-                .stepName(data.getStepName())
-                .startDate(LocalDateTime.now())
-                .deadline(deadline)
-                .referenceYear(data.getYear())//alterar para pegar do front se for considerar datas diferentes
-                .active(true)
-                .build();
-
+        EvaluationPeriod newPeriod = new EvaluationPeriod();
+        newPeriod.setStepName(data.getStepName());
+        newPeriod.setStartDate(deadline);
+        newPeriod.setDeadline(deadline);
+        newPeriod.setReferenceYear(data.getYear());
+        newPeriod.setActive(true);
         repository.save(newPeriod);
     }
 
@@ -117,6 +111,15 @@ public class PainelControleService {
         activePeriod.setActive(false);
         activePeriod.setDeadline(LocalDateTime.now());
         repository.save(activePeriod);
+    }
+
+    public void verifyActivePeriod() {
+        EvaluationPeriod activePeriod = getActivePeriod()
+                .orElseThrow(() -> new BusinessRuleException("O período de avaliações está fechado no momento!"));
+        if (activePeriod.isExpired()) {
+            manuallyEndCurrentPeriod();
+            throw new BusinessRuleException("O prazo para esta etapa expirou!");
+        }
     }
 
 }

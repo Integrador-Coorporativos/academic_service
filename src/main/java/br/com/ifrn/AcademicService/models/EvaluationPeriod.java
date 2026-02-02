@@ -1,7 +1,7 @@
 package br.com.ifrn.AcademicService.models;
 
+import br.com.ifrn.AcademicService.models.enums.StepName;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EvaluationPeriod {
 
     @Id
@@ -18,8 +17,8 @@ public class EvaluationPeriod {
     private Long id;
 
     @Column(name = "step_name", nullable = false)
-    @NotBlank(message = "O nome da etapa é obrigatório")
-    private String stepName; // Ex: "1ª Etapa", "2º Bimestre"
+    @Enumerated(EnumType.STRING)
+    private StepName stepName; // Ex: "1ª Etapa", "2º Bimestre"
 
     @Column(nullable = false)
     private LocalDateTime startDate;
