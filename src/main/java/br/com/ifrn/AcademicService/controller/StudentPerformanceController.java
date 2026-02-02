@@ -5,6 +5,7 @@ import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseclassificationsClassDTO;
+import br.com.ifrn.AcademicService.models.enums.StepName;
 import br.com.ifrn.AcademicService.services.StudentPerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,9 @@ public class StudentPerformanceController implements StudentPerformanceControlle
     public ResponseEntity<List<ResponseStudentPerformanceDTO>> getAllStudentPerformance() {
         return ResponseEntity.ok().body(studentPerformanceService.getAllStudentPerformance());
     }
-    @GetMapping("/class/{id}/{year}")
-    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year) {
-        return ResponseEntity.ok().body(studentPerformanceService.getClassificationByClassId(id, year));
+    @GetMapping("/class/{id}/{year}/{bimestre}")
+    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year, @PathVariable StepName bimestre) {
+        return ResponseEntity.ok().body(studentPerformanceService.getClassificationByClassId(id, year, bimestre));
     }
     @GetMapping("/class/all")
     public ResponseEntity<List<ResponseclassificationsClassDTO>> getClassEvaluationsAll() {

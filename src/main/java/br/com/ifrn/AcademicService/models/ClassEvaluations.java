@@ -9,6 +9,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.Range;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Entity
 @Audited
@@ -32,4 +33,12 @@ public class ClassEvaluations {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private EvaluationsCriteria criteria;
 
+    @ManyToOne
+    @JoinColumn(name = "evaluation_period_id")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private EvaluationPeriod evaluationPeriod;
+
+    public void setEvaluationPeriod(Optional<EvaluationPeriod> activePeriod) {
+
+    }
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -37,7 +38,7 @@ public class ClassComments {
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @NotAudited
     private Classes classe;
 
 

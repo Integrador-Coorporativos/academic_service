@@ -11,6 +11,7 @@ import br.com.ifrn.AcademicService.models.ClassEvaluations;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.models.enums.Status;
+import br.com.ifrn.AcademicService.models.enums.StepName;
 import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.repository.EvaluationMetricsProjection;
@@ -89,7 +90,7 @@ public class StudentPerformanceService {
         return dtos;
     }
 
-    public ResponseclassificationsClassDTO getClassificationByClassId(Integer classId, Integer year) throws EntityNotFoundException {
+    public ResponseclassificationsClassDTO getClassificationByClassId(Integer classId, Integer year, StepName bimestre) throws EntityNotFoundException {
         Classes classe = classesRepository.findById(classId).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
         // Busca as médias. O banco pode retornar null se não houver avaliações.
         EvaluationMetricsProjection metrics = classEvaluationsRepository.findRawMetricsByClassIdAndYear(classe.getClassId(), year);
