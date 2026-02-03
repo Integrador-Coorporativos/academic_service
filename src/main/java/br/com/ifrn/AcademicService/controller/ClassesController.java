@@ -22,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/classes")
 @Tag(name = "Classes", description = "Operações relacionadas a Turmas")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ClassesController implements ClassesControllerDocs {
 
     @Autowired

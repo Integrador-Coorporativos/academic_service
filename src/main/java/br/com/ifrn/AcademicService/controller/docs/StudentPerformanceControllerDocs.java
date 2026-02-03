@@ -97,4 +97,20 @@ public interface StudentPerformanceControllerDocs {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
     })
     public ResponseEntity<List<ResponseclassificationsClassDTO>> getClassEvaluationsAll();
+
+    @Operation(
+            summary = "Atualizar desempenho individual do aluno por ID",
+            description = "Endpoint específico para atualizar os dados de performance de um aluno diretamente."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Desempenho atualizado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseStudentPerformanceDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Registro não encontrado")
+    })
+    public ResponseEntity<ResponseStudentPerformanceDTO> updateIndividualStudentPeformance(
+            @PathVariable Integer id,
+            @RequestBody RequestStudentPerformanceUpdateDTO dto
+    );
 }

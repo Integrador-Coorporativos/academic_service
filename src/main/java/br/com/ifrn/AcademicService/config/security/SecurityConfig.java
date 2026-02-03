@@ -51,6 +51,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                             authorizeConfig.requestMatchers("/public").permitAll();
                             authorizeConfig.requestMatchers("/logout").permitAll();
 
+                            authorizeConfig.requestMatchers("/api/admin-panel/**").permitAll();
+
+                            authorizeConfig.requestMatchers("/api/performance/**").permitAll();
+
 
                             // Para poder trabalhar os endpoints
                             authorizeConfig.requestMatchers("/api/courses/**").permitAll();

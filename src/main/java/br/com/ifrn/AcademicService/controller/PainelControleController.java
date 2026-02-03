@@ -7,6 +7,7 @@ import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.services.PainelControleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin-panel")
-public class PainelControleController implements PainelControleControllerDocs {
+@CrossOrigin(origins = "http://localhost:5173")
+public class    PainelControleController implements PainelControleControllerDocs {
 
     @Autowired
     PainelControleService painelControleService;

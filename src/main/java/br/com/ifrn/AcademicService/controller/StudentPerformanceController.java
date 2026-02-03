@@ -43,4 +43,9 @@ public class StudentPerformanceController implements StudentPerformanceControlle
     public ResponseEntity<ResponseStudentPerformanceDTO> updateStudentEvaluation(@PathVariable Integer id, @RequestBody RequestStudentPerformanceUpdateDTO dto) {
         return ResponseEntity.ok().body(studentPerformanceService.updateStudentPerformance(id, dto));
     }
+
+    @PutMapping("/student/{id}")
+    public ResponseEntity<ResponseStudentPerformanceDTO> updateIndividualStudentPeformance(@PathVariable Integer id, @RequestBody RequestStudentPerformanceUpdateDTO dto) {
+        return ResponseEntity.ok().body(studentPerformanceService.updateStudentPerformance(id, dto));
+    }
 }

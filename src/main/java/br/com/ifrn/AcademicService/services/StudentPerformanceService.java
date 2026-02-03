@@ -139,12 +139,30 @@ public class StudentPerformanceService {
 
     @CacheEvict(value = {"studentPerformanceCache", "studentPerformanceCacheAll"}, allEntries = true)
     public ResponseStudentPerformanceDTO updateStudentPerformance(Integer id, RequestStudentPerformanceUpdateDTO dto) {
+        // 1. Busca a performance no banco
         StudentPerformance studentPerformance = studentPerformanceRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Not found Student Performance by Id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Não foi possível encontrar o desempenho com ID: " + id));
+
+        // 2. Atualiza os dados brutos (IRA, faltas, etc) vindos do seu Modal
         mapper.updateEntityFromDto(dto, studentPerformance);
+
+        // 3. RECALCULO DE STATUS: Aqui resolvemos o problema do "Ruim" com nota alta
+        // Ajuste os valores conforme a regra da sua instituição
+        float media = studentPerformance.getAverageScore();
+
+        if (media >= 80.0f) {
+            studentPerformance.setStatus(Status.BOM); // Se tiver 'OPTIMO' no seu Enum, use ele aqui
+        } else if (media >= 60.0f) {
+            studentPerformance.setStatus(Status.BOM);
+        } else {
+            studentPerformance.setStatus(Status.RUIM);
+        }
+
+        // 4. Salva apenas uma vez com o novo status definido
         studentPerformance = studentPerformanceRepository.save(studentPerformance);
-        ResponseStudentPerformanceDTO responseDto = mapper.toResponseDto(studentPerformanceRepository.save(studentPerformance));
-        return responseDto;
+
+        // 5. Retorna para o Front-end já com o status corrigido
+        return mapper.toResponseDto(studentPerformance);
     }
 
     public ResponseStudentPerformanceDTO getClassEvaluationsById(Integer id) {
