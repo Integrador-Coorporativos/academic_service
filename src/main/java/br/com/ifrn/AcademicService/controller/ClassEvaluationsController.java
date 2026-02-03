@@ -2,6 +2,7 @@ package br.com.ifrn.AcademicService.controller;
 
 import br.com.ifrn.AcademicService.controller.docs.ClassEvaluationsControllerDocs;
 import br.com.ifrn.AcademicService.dto.request.RequestClassEvaluationsDTO;
+import br.com.ifrn.AcademicService.dto.response.DashboardMetricsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.services.ClassEvaluationsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,13 @@ public class ClassEvaluationsController implements ClassEvaluationsControllerDoc
     @GetMapping
     public ResponseEntity<List<ResponseClassEvaluationsDTO>> getAllEvaluations() {
         return ResponseEntity.ok().body(classEvaluationsService.getAllEvaluations());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
+    @GetMapping("/dashboard/metrics")
+    public ResponseEntity<DashboardMetricsDTO> getEvaluationsByDashboard(Authentication authentication) {
+        String professorId = getProfessorId(authentication);
+        return ResponseEntity.ok().body(classEvaluationsService.getEvaluationsByDashboard(professorId));
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")

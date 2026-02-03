@@ -90,7 +90,7 @@ public class PainelControleService {
         LocalDateTime deadline = start.plusWeeks(1);
         EvaluationPeriod newPeriod = new EvaluationPeriod();
         newPeriod.setStepName(data.getStepName());
-        newPeriod.setStartDate(deadline);
+        newPeriod.setStartDate(start);
         newPeriod.setDeadline(deadline);
         newPeriod.setReferenceYear(data.getYear());
         newPeriod.setActive(true);
@@ -110,7 +110,7 @@ public class PainelControleService {
         });
     }
     public Optional<EvaluationPeriod> getActivePeriod() {
-        return repository.findByActiveTrue();
+        return repository.findFirstByOrderByActiveDescStartDateDesc();
     }
 
     @Transactional

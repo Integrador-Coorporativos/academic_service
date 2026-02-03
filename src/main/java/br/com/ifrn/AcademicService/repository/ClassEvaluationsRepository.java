@@ -1,11 +1,14 @@
 package br.com.ifrn.AcademicService.repository;
 
+import br.com.ifrn.AcademicService.models.EvaluationPeriod;
+import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import br.com.ifrn.AcademicService.models.enums.StepName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.ifrn.AcademicService.models.ClassEvaluations;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 public interface ClassEvaluationsRepository extends JpaRepository<ClassEvaluations, Integer> {
     List<ClassEvaluations> findByClassId(String classId);
@@ -52,5 +55,27 @@ WHERE e.classId = :classId
             @Param("classId") String classId,
             @Param("year") Integer year,
             @Param("step") StepName step
+    );
+
+    @Query("""
+    SELECT e.criteria 
+    FROM ClassEvaluations e 
+    JOIN e.evaluationPeriod p 
+    WHERE e.classId = :classId 
+      AND e.professorId = :professorId 
+      AND p.referenceYear = :year 
+      AND p.stepName = :step
+    """)
+    EvaluationsCriteria findCriteriaByProfessorClassAndStep(
+            @Param("professorId") String professorId,
+            @Param("classId") String classId,
+            @Param("year") Integer year,
+            @Param("step") StepName step
+    );
+
+    Optional<ClassEvaluations> findByProfessorIdAndClassIdAndEvaluationPeriod(
+            String professorId,
+            String classId,
+            EvaluationPeriod evaluationPeriod
     );
 }

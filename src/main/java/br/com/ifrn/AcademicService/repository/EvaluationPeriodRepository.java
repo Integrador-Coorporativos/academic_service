@@ -14,6 +14,7 @@ public interface EvaluationPeriodRepository extends JpaRepository<EvaluationPeri
 
     // Busca o período que está rolando agora
     Optional<EvaluationPeriod> findByActiveTrue();
+    Optional<EvaluationPeriod> findFirstByOrderByActiveDescStartDateDesc();
 
     // Desativa todos os períodos (usado antes de começar um novo)
     @Modifying

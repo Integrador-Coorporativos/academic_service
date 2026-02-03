@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.models;
 
 import br.com.ifrn.AcademicService.models.enums.StepName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -21,9 +22,11 @@ public class EvaluationPeriod {
     private StepName stepName; // Ex: "1ª Etapa", "2º Bimestre"
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM. 'de' yyyy", locale = "pt-BR")
     private LocalDateTime startDate;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMM. 'de' yyyy", locale = "pt-BR")
     private LocalDateTime deadline; // O "prazo final"
 
     @Column(nullable = false)
