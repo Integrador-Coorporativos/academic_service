@@ -8,6 +8,7 @@ import br.com.ifrn.AcademicService.services.ClassCommentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -23,6 +24,7 @@ public class ClassCommentsController implements ClassCommentsControllerDocs {
     @Autowired
     private ClassCommentsService commentService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @GetMapping
     public ResponseEntity<List<ResponseCommentDTO>> getByClass(@PathVariable Integer classId) {
         List<ResponseCommentDTO> comments = commentService.getByTurma(classId);
@@ -32,6 +34,7 @@ public class ClassCommentsController implements ClassCommentsControllerDocs {
         return ResponseEntity.ok(comments);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @PostMapping
     public ResponseEntity<ResponseCommentDTO> create(
             @PathVariable Integer classId,
@@ -45,6 +48,7 @@ public class ClassCommentsController implements ClassCommentsControllerDocs {
         );
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @PutMapping("/{commentId}")
     public ResponseEntity<ResponseCommentDTO> update(
             @PathVariable Integer commentId,
@@ -56,6 +60,7 @@ public class ClassCommentsController implements ClassCommentsControllerDocs {
         return ResponseEntity.ok(commentService.update(commentId, comment, professorId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> delete(@PathVariable Integer classId, @PathVariable Integer commentId) {
 
