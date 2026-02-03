@@ -28,8 +28,8 @@ public class StudentPerformanceController implements StudentPerformanceControlle
     public ResponseEntity<List<ResponseStudentPerformanceDTO>> getAllStudentPerformance() {
         return ResponseEntity.ok().body(studentPerformanceService.getAllStudentPerformance());
     }
-    @GetMapping("/class/{id}/{year}/{bimestre}")
-    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year, @PathVariable StepName bimestre) {
+    @GetMapping("/class/{id}/{year}/bimestre/{bimestre}")
+    public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year, @PathVariable Integer bimestre) {
         return ResponseEntity.ok().body(studentPerformanceService.getClassificationByClassId(id, year, bimestre));
     }
     @GetMapping("/class/all")

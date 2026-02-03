@@ -90,41 +90,60 @@ public class StudentPerformanceService {
         return dtos;
     }
 
-    public ResponseclassificationsClassDTO getClassificationByClassId(Integer classId, Integer year, StepName bimestre) throws EntityNotFoundException {
-        Classes classe = classesRepository.findById(classId).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
-        // Busca as médias. O banco pode retornar null se não houver avaliações.
-        EvaluationMetricsProjection metrics = classEvaluationsRepository.findRawMetricsByClassIdAndYear(classe.getClassId(), year);
+    /**
+     * Recupera as métricas de classificação e o ranking de uma turma específica filtrada por ano e bimestre.
+     * <p>
+     * O método realiza a agregação de dados através de uma projeção do banco de dados,
+     * tratando valores nulos e convertendo o identificador numérico do bimestre para o Enum correspondente.
+     * Além disso, acopla os dados de ranking anual à resposta final.
+     * </p>
+     *
+     * @param classId  O ID interno (PK) da turma para busca no repositório.
+     * @param year     O ano letivo de referência para o filtro das avaliações e ranking.
+     * @param bimestre O identificador numérico do bimestre (1 a 4).
+     * @return {@link ResponseclassificationsClassDTO} contendo as médias de desempenho por critério e o rank da turma.
+     * @throws EntityNotFoundException Se a turma com o {@code classId} fornecido não existir.
+     * @throws RuntimeException Se o bimestre for inválido ou se a turma não possuir dados de ranking processados para o ano.
+     * * @see StepName#fromId(int)
+     * @see EvaluationMetricsProjection
+     */
+    public ResponseclassificationsClassDTO getClassificationByClassId(Integer classId, Integer year, Integer bimestre) throws EntityNotFoundException {
+        // 1. Busca a entidade da turma
+        Classes classe = classesRepository.findById(classId)
+                .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
 
+        // 2. Converte o bimestre e busca as métricas ESPECÍFICAS do bimestre
+        StepName stepName = StepName.fromId(bimestre);
+        EvaluationMetricsProjection bimestreMetrics = classEvaluationsRepository
+                .findMetricsByClassAndYearAndStep(classe.getClassId(), year, stepName);
+
+        // 3. Inicializa o DTO com dados básicos
         ResponseclassificationsClassDTO dto = new ResponseclassificationsClassDTO();
         dto.setClassId(classe.getId());
         dto.setCourseName(classe.getCourse().getName());
         dto.setShift(classe.getShift());
         dto.setGradleLevel(classe.getGradleLevel());
 
-        if (metrics != null && metrics.getAvgFrequency() != null) {
-            dto.setFrequencyScore(metrics.getAvgFrequency());
-            dto.setUnifirmScore(metrics.getAvgUniform());
-            dto.setBehaviorScore(metrics.getAvgBehavior());
-            dto.setParticipationScore(metrics.getAvgParticipation());
-            dto.setPerformanceScore(metrics.getAvgPerformance());
-            dto.setCellPhoneUseScore(metrics.getAvgCellPhone());
-            dto.setAverageScore(metrics.getAvgTotal());
+        // 4. Popula os scores usando as métricas do BIMESTRE (bimestreMetrics)
+        if (bimestreMetrics != null && bimestreMetrics.getAvgTotal() != null) {
+            dto.setFrequencyScore(bimestreMetrics.getAvgFrequency() != null ? bimestreMetrics.getAvgFrequency() : 0.0f);
+            dto.setUnifirmScore(bimestreMetrics.getAvgUniform() != null ? bimestreMetrics.getAvgUniform() : 0.0f);
+            dto.setBehaviorScore(bimestreMetrics.getAvgBehavior() != null ? bimestreMetrics.getAvgBehavior() : 0.0f);
+            dto.setParticipationScore(bimestreMetrics.getAvgParticipation() != null ? bimestreMetrics.getAvgParticipation() : 0.0f);
+            dto.setPerformanceScore(bimestreMetrics.getAvgPerformance() != null ? bimestreMetrics.getAvgPerformance() : 0.0f);
+            dto.setCellPhoneUseScore(bimestreMetrics.getAvgCellPhone() != null ? bimestreMetrics.getAvgCellPhone() : 0.0f);
+            dto.setAverageScore(bimestreMetrics.getAvgTotal());
         } else {
-            dto.setFrequencyScore(0.0f);
-            dto.setUnifirmScore(0.0f);
-            dto.setBehaviorScore(0.0f);
-            dto.setParticipationScore(0.0f);
-            dto.setPerformanceScore(0.0f);
-            dto.setCellPhoneUseScore(0.0f);
-            dto.setAverageScore(0.0f);
+            resetScores(dto);
         }
+
+        // 5. Ranking (Geralmente anual, então mantemos a lógica original)
         List<ResponseClassificationsRankDTO> allRankings = getClassesWithRankings(year);
         ResponseClassificationsRankDTO rank = allRankings.stream()
-                .filter(dto2 -> {
-                    return dto2.getClassid().equals(classId);
-                })
+                .filter(r -> r.getClassid().equals(classId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Turma não encontrada ou sem avaliações para o ranking"));
+                .orElseThrow(() -> new RuntimeException("Turma não encontrada ou sem avaliações para o ranking no ano de " + year));
+
         dto.setRank(rank);
         return dto;
     }
@@ -259,6 +278,16 @@ public class StudentPerformanceService {
                 this.freq = this.unif = this.behav = this.partic = this.perf = this.cell = this.avg = 0.0;
             }
         }
+    }
+
+    private void resetScores(ResponseclassificationsClassDTO dto) {
+        dto.setFrequencyScore(0.0f);
+        dto.setUnifirmScore(0.0f);
+        dto.setBehaviorScore(0.0f);
+        dto.setParticipationScore(0.0f);
+        dto.setPerformanceScore(0.0f);
+        dto.setCellPhoneUseScore(0.0f);
+        dto.setAverageScore(0.0f);
     }
 }
 

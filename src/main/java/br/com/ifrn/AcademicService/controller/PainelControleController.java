@@ -7,6 +7,7 @@ import br.com.ifrn.AcademicService.dto.response.ResponseProfessorPanelDTO;
 import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.models.EvaluationPeriod;
 import br.com.ifrn.AcademicService.services.PainelControleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +32,9 @@ public class PainelControleController implements PainelControleControllerDocs {
     }
 
     @PostMapping("/evaluation-periods/start")
-    public ResponseEntity<String> startNewEvaluationCycle(@RequestBody StartPeriodDTO dto) {
-        try {
-             painelControleService.startNewPeriod(dto);
-            return ResponseEntity.ok("Sucesso!");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("ERRO: " + e.getMessage());
-        }
+    public ResponseEntity<String> startNewEvaluationCycle(@RequestBody @Valid StartPeriodDTO dto) {
+        painelControleService.startNewPeriod(dto);
+        return ResponseEntity.ok("Sucesso!");
     }
 
 
