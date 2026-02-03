@@ -75,14 +75,16 @@ public class ClassEvaluationsService {
     public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, Integer id, String professorId) {
         painelControleService.verifyActivePeriod();
         Classes classes = classesRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Class not found"));
-
+        EvaluationPeriod activePeriod = painelControleService.getActivePeriod()
+                .orElseThrow(() -> new IllegalStateException("Nenhum período de avaliação ativo encontrado"));
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
+        evaluations.setAverageScore(calcAverageScore(dto));
         ClassEvaluations classEvaluations = new  ClassEvaluations();
         classEvaluations.setClassId(classes.getClassId());
         classEvaluations.setProfessorId(professorId);
         classEvaluations.setCriteria(evaluations);
         classEvaluations.setDate(LocalDate.now());
-        classEvaluations.setEvaluationPeriod(painelControleService.getActivePeriod());
+        classEvaluations.setEvaluationPeriod(activePeriod);
         classEvaluations = classEvaluationsRepository.save(classEvaluations);
         return evaluationsMapper.toResponseClassEvaluationsDTO(classEvaluations);
     }

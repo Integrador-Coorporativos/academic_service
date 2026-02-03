@@ -38,7 +38,7 @@ public class ClassEvaluations {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private EvaluationPeriod evaluationPeriod;
 
-    public void setEvaluationPeriod(Optional<EvaluationPeriod> activePeriod) {
-
+    public void setEvaluationPeriod(EvaluationPeriod evaluationPeriod) {
+        this.evaluationPeriod = evaluationPeriod;
     }
 }

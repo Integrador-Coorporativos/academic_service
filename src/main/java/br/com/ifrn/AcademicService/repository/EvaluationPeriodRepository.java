@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.repository;
 
 import br.com.ifrn.AcademicService.models.EvaluationPeriod;
+import br.com.ifrn.AcademicService.models.enums.StepName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,5 @@ public interface EvaluationPeriodRepository extends JpaRepository<EvaluationPeri
     @Modifying
     @Query("UPDATE EvaluationPeriod e SET e.active = false WHERE e.active = true")
     void deactivateAllActivePeriods();
+    boolean existsByStepNameAndReferenceYear(StepName stepName, Integer referenceYear);
 }

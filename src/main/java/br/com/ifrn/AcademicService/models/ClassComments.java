@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +40,7 @@ public class ClassComments {
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
     @NotAudited
+    @JsonIgnore
     private Classes classe;
 
 

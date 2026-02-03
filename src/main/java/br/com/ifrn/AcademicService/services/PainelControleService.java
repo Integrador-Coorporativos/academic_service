@@ -76,6 +76,15 @@ public class PainelControleService {
 
     @Transactional
     public void startNewPeriod(StartPeriodDTO data) {
+        boolean alreadyExists = repository.existsByStepNameAndReferenceYear(
+                data.getStepName(),
+                data.getYear()
+        );
+
+        if (alreadyExists) {
+            throw new BusinessRuleException("O ciclo " + data.getStepName().getDescricao() +
+                    " para o ano " + data.getYear() + " já foi criado anteriormente.");
+        }
         repository.deactivateAllActivePeriods();
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime deadline = start.plusWeeks(1);
