@@ -16,10 +16,12 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import static org.springframework.security.config.Customizer.withDefaults;
+
+
 
 @Configuration
 @EnableWebSecurity
@@ -52,7 +54,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                             authorizeConfig.requestMatchers("/logout").permitAll();
 
 
-                            // Para poder trabalhar os endpoints
                             authorizeConfig.requestMatchers("/api/courses/**").permitAll();
                             authorizeConfig.requestMatchers("/api/classes/**").permitAll();
 
@@ -61,7 +62,9 @@ public class SecurityConfig implements WebMvcConfigurer {
                             authorizeConfig.anyRequest().authenticated();
                         })
                 .oauth2Login(withDefaults())
-                .oauth2ResourceServer(conf -> conf.jwt(withDefaults()))
+                .oauth2ResourceServer(conf -> conf.jwt(jwt ->
+                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
+                ))
                 .build();
     }
     @Override
@@ -88,20 +91,15 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
-
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            // 1. Pega as authorities padrão (como SCOPE_profile, SCOPE_email)
-            Collection<GrantedAuthority> authorities = defaultConverter.convert(jwt);
-
-            // 2. Pega o seu atributo customizado "type_user"
-            String typeUser = jwt.getClaimAsString("type_user");
-
-            if (typeUser != null) {
-                // Adicionamos o valor (Aluno/Professor) como uma permissão
-                authorities.add(new SimpleGrantedAuthority(typeUser));
+            Collection<GrantedAuthority> authorities = new ArrayList<>(defaultConverter.convert(jwt));
+            List<String> typeUsers = jwt.getClaim("type_user");
+            if (typeUsers != null) {
+                typeUsers.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .forEach(authorities::add);
             }
-
             return authorities;
         });
         return converter;

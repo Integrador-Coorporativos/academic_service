@@ -10,6 +10,7 @@ import br.com.ifrn.AcademicService.services.PainelControleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +22,26 @@ public class PainelControleController implements PainelControleControllerDocs {
     @Autowired
     PainelControleService painelControleService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/professor")
     public ResponseEntity<List<ResponseProfessorPanelDTO>> getAllProfessors() {
         return ResponseEntity.ok(painelControleService.getAllProfessors());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/students")
     public ResponseEntity<List<StudentDataDTO>> getAllStudents() {
         return ResponseEntity.ok(painelControleService.getAllStudents());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/evaluation-periods/start")
     public ResponseEntity<String> startNewEvaluationCycle(@RequestBody @Valid StartPeriodDTO dto) {
         painelControleService.startNewPeriod(dto);
         return ResponseEntity.ok("Sucesso!");
     }
 
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/evaluation-periods/active")
     public ResponseEntity<EvaluationPeriod> getActivePeriod() {
         return painelControleService.getActivePeriod()
@@ -45,6 +49,7 @@ public class PainelControleController implements PainelControleControllerDocs {
                 .orElse(ResponseEntity.noContent().build());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/evaluation-periods/end-current")
     public ResponseEntity<String> endCurrentEvaluationCycle() {
         try {

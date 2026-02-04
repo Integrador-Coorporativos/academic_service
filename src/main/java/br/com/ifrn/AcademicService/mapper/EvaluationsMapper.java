@@ -27,6 +27,9 @@ public interface EvaluationsMapper {
 
     EvaluationsCriteria toEvaluationsCriteria(RequestClassEvaluationsDTO evaluationsCriteria);
 
+    void updateCriteriaFromDto(RequestClassEvaluationsDTO dto,
+                             @MappingTarget EvaluationsCriteria entity);
+
     void updateEntityFromDto(RequestClassEvaluationsDTO dto,
                              @MappingTarget ClassEvaluations entity);
 }
