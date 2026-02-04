@@ -8,6 +8,7 @@ import br.com.ifrn.AcademicService.models.ClassEvaluations;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ClassEvaluationsRepository extends JpaRepository<ClassEvaluations, Integer> {
@@ -77,5 +78,27 @@ WHERE e.classId = :classId
             String professorId,
             String classId,
             EvaluationPeriod evaluationPeriod
+    );
+
+    @Query("""
+    SELECT 
+        AVG(c.frequencyScore) AS avgFrequency,
+        AVG(c.unifirmScore) AS avgUniform,
+        AVG(c.behaviorScore) AS avgBehavior,
+        AVG(c.participationScore) AS avgParticipation,
+        AVG(c.performanceScore) AS avgPerformance,
+        AVG(c.cellPhoneUseScore) AS avgCellPhone,
+        AVG(e.averageScore) AS avgTotal
+    FROM ClassEvaluations e
+    JOIN e.criteria c
+    JOIN e.evaluationPeriod p
+    WHERE e.classId = :classId
+      AND p.referenceYear = :year
+      AND p.stepName = :step
+""")
+    EvaluationMetricsProjection getEvaluationMetrics(
+            @Param("classId") String classId,
+            @Param("year") Integer year,
+            @Param("step") StepName step
     );
 }
