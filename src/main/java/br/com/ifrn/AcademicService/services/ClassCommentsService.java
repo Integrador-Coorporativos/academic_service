@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class ClassCommentsService {
     }
 
     @CacheEvict(value = "commentsCache", allEntries = true)
+    @Transactional
     public ResponseCommentDTO create(RequestCommentDTO commentDTO, String professorId, Integer classId) {
         if (professorId == null || professorId.trim().isEmpty()) {
             throw new IllegalArgumentException("Professor ID inválido!");
@@ -73,6 +75,7 @@ public class ClassCommentsService {
     }
 
     @CacheEvict(value = "commentsCache", allEntries = true)
+    @Transactional
     public ResponseCommentDTO update(Integer commentId,  RequestCommentDTO comment, String professorId) throws IllegalAccessException {
         ClassComments classComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ccomentário não encontrado!"));

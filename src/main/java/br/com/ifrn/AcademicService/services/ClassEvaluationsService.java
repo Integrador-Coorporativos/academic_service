@@ -2,9 +2,11 @@ package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.dto.request.RequestClassEvaluationsDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseClassEvaluationsDTO;
+import br.com.ifrn.AcademicService.exception.BusinessRuleException;
 import br.com.ifrn.AcademicService.mapper.EvaluationsMapper;
 import br.com.ifrn.AcademicService.models.ClassEvaluations;
 import br.com.ifrn.AcademicService.models.Classes;
+import br.com.ifrn.AcademicService.models.EvaluationPeriod;
 import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +33,10 @@ public class ClassEvaluationsService {
     @Autowired
     ClassesRepository classesRepository;
 
+    @Autowired
+    PainelControleService painelControleService;
+
+
     @Cacheable(value = "evaluationsCacheAll")
     public List<ResponseClassEvaluationsDTO> getAllEvaluations() {
 
@@ -39,7 +46,6 @@ public class ClassEvaluationsService {
         List<ResponseClassEvaluationsDTO> responseDTOList = classEvaluations.stream()
                 .map(evaluationsMapper::toResponseClassEvaluationsDTO)
                 .collect(Collectors.toCollection(ArrayList::new));
-
         return responseDTOList;
     }
 
@@ -65,21 +71,27 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
-    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCacheByClass"}, key = "#classId")
-    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, String classId, String professorId) {
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCacheByClass"}, key = "#id")
+    public ResponseClassEvaluationsDTO createEvaluation(RequestClassEvaluationsDTO dto, Integer id, String professorId) {
+        painelControleService.verifyActivePeriod();
+        Classes classes = classesRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Class not found"));
+        EvaluationPeriod activePeriod = painelControleService.getActivePeriod()
+                .orElseThrow(() -> new IllegalStateException("Nenhum período de avaliação ativo encontrado"));
         EvaluationsCriteria evaluations = evaluationsMapper.toEvaluationsCriteria(dto);
+        evaluations.setAverageScore(calcAverageScore(dto));
         ClassEvaluations classEvaluations = new  ClassEvaluations();
-        classEvaluations.setClassId(classId);//precisa adicionar validação de existencia de turma
-        classEvaluations.setProfessorId(professorId);//precisa adicionar validação de existencia do professor
+        classEvaluations.setClassId(classes.getClassId());
+        classEvaluations.setProfessorId(professorId);
         classEvaluations.setCriteria(evaluations);
         classEvaluations.setDate(LocalDate.now());
-        evaluations.setAverageScore(calcAverageScore(dto));
+        classEvaluations.setEvaluationPeriod(activePeriod);
         classEvaluations = classEvaluationsRepository.save(classEvaluations);
         return evaluationsMapper.toResponseClassEvaluationsDTO(classEvaluations);
     }
 
-    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#entity.classId")
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#id")
     public ResponseClassEvaluationsDTO updateEvaluation(Integer id, RequestClassEvaluationsDTO dto) {
+        painelControleService.verifyActivePeriod();
         ClassEvaluations entity = classEvaluationsRepository.findById(id)
                 .orElseThrow(()-> new NoSuchElementException("ClassEvaluations not found with id: " + id));
 
@@ -90,15 +102,13 @@ public class ClassEvaluationsService {
         return responseDTO;
     }
 
-    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#classId")
+    @CacheEvict(value = {"evaluationsCacheAll", "evaluationsCache", "evaluationsCacheByClass"}, key = "#id")
     public void deleteEvaluation(Integer id) {
         if (!classEvaluationsRepository.existsById(id)){
             throw new NoSuchElementException("ClassEvaluations not found with id: " + id);
         }
         classEvaluationsRepository.deleteById(id);
     }
-
-
 
     private float calcAverageScore(RequestClassEvaluationsDTO dto) {
         float averageScore = 0.0F;

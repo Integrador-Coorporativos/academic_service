@@ -16,6 +16,7 @@ public class ResponseClassDTO implements Serializable {
     private String gradleLevel;
     private String shift;
     private ResponseCourseDTO course;
+    private boolean isTeacherLinked = false;
     //private List<ResponseCommentDTO> comments;
     //private List<String> userId;
     private String classId;

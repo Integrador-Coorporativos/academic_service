@@ -12,7 +12,6 @@ import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,11 +46,21 @@ public class ClassesService {
     KeycloakAdminConfig keycloakAdminConfig;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "classesCacheAll")
-    public List<ResponseClassDTO> getAll() {
-        return classsMapper.toResponseClassDTO(classesRepository.findAllWithCourse());
+    @Cacheable(value = "classesCacheAll", key = "#professorId")
+    public List<ResponseClassDTO> getAll(String professorId) {
+        List<Classes> classes = classesRepository.findAllWithCourse();
+        List<ResponseClassDTO> responseClassDTOList =  new ArrayList<>();
+        classes.forEach(c ->{
+            ResponseClassDTO responseClassDTO = classsMapper.toResponseClassDTO(c);
+            if (c.getProfessors().contains(professorId)){
+                responseClassDTO.setTeacherLinked(true);
+            }
+            responseClassDTOList.add(responseClassDTO);
+        });
+        return responseClassDTOList;
     }
 
+    @Cacheable(value = "getMyClasses", key = "#professorId")
     public List<ResponseClassDTO> getMyClasses(String professorId) {
         return classsMapper.toResponseClassDTO(classesRepository.findClassesByProfessor(professorId));
     }
@@ -156,6 +165,7 @@ public class ClassesService {
         return true;
     }
 
+    @CacheEvict(value = {"classesCacheAll", "getMyClasses", "classesCache"}, allEntries = true)
     public ResponseClassDTO addProfessorToClass(Integer id, String professorId) {
         Classes classe = classesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
         if (classe.getProfessors().contains(professorId)){
