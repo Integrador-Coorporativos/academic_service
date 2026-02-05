@@ -8,89 +8,105 @@ import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.services.CoursesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class CoursesServiceTest {
 
     @Mock
     private CoursesRepository coursesRepository;
 
+    @Mock
+    private CoursesMapper coursesMapper;
+
     @InjectMocks
     private CoursesService coursesService;
 
-    @Autowired
-    CoursesMapper coursesMapper;
-
     private Courses course;
+    private ResponseCourseDTO responseDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         course = new Courses();
         course.setId(1);
         course.setName("Análise de Sistemas");
+
+        responseDTO = new ResponseCourseDTO();
+        responseDTO.setId(1);
+        responseDTO.setName("Análise de Sistemas");
     }
 
     @Test
     void testCreate() {
-        when(coursesRepository.findByName(course.getName())).thenReturn(null);
-        when(coursesRepository.save(any(Courses.class))).thenReturn(course);
-        RequestCourseDTO  requestCourseDTO = coursesMapper.toRequestCourseDTO(course);
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("Análise de Sistemas");
 
-        ResponseCourseDTO created = coursesService.create(requestCourseDTO);
+        when(coursesRepository.findByName("Análise de Sistemas")).thenReturn(null);
+        when(coursesRepository.save(any(Courses.class))).thenReturn(course);
+
+        when(coursesMapper.toResponseCourseDTO(any(Courses.class))).thenReturn(responseDTO);
+
+        ResponseCourseDTO created = coursesService.create(request);
 
         assertNotNull(created);
         assertEquals("Análise de Sistemas", created.getName());
+        verify(coursesRepository).save(any(Courses.class));
     }
 
     @Test
     void testGetAll() {
         when(coursesRepository.findAll()).thenReturn(List.of(course));
 
+        when(coursesMapper.toResponseCourseDTO(anyList()))
+                .thenReturn(List.of(responseDTO));
+
         List<ResponseCourseDTO> all = coursesService.getAll();
 
         assertEquals(1, all.size());
+        assertEquals("Análise de Sistemas", all.get(0).getName());
     }
 
     @Test
     void testGetById() {
         when(coursesRepository.findById(1)).thenReturn(Optional.of(course));
+        when(coursesMapper.toResponseCourseDTO(course)).thenReturn(responseDTO);
 
         ResponseCourseDTO result = coursesService.getById(1);
 
-        assertTrue(result != null);
+        assertNotNull(result);
+        assertEquals("Análise de Sistemas", result.getName());
     }
 
     @Test
     void testUpdate() {
-        // GIVEN
-        Courses updatedDetails = new Courses();
-        updatedDetails.setName("Informática"); // Nome válido, não lança erro!
-        RequestCourseDTO requestCourseDTO = coursesMapper.toRequestCourseDTO(updatedDetails);
-
-        // "turma" ou "course" (o que está no banco)
         Courses courseInDb = new Courses();
         courseInDb.setId(1);
         courseInDb.setName("Nome Antigo");
 
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("Informática");
+
+        ResponseCourseDTO updatedResponse = new ResponseCourseDTO();
+        updatedResponse.setId(1);
+        updatedResponse.setName("Informática");
+
         when(coursesRepository.findById(1)).thenReturn(Optional.of(courseInDb));
         when(coursesRepository.save(any(Courses.class))).thenAnswer(i -> i.getArgument(0));
 
-        // WHEN
-        ResponseCourseDTO result = coursesService.update(1, requestCourseDTO);
+        when(coursesMapper.toResponseCourseDTO(any(Courses.class))).thenReturn(updatedResponse);
 
-        // THEN
+        ResponseCourseDTO result = coursesService.update(1, request);
+
         assertEquals("Informática", result.getName());
         verify(coursesRepository).save(any(Courses.class));
     }
@@ -110,63 +126,68 @@ class CoursesServiceTest {
         when(coursesRepository.existsById(1)).thenReturn(false);
 
         assertThrows(RuntimeException.class, () -> coursesService.delete(1));
-        verify(coursesRepository, never()).deleteById(any());
+        verify(coursesRepository, never()).deleteById(anyInt());
     }
 
     @Test
     void testCreateWithEmptyNameShouldFail() {
-        course.setName("");
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("");
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.create(coursesMapper.toRequestCourseDTO(course)));
+        assertThrows(IllegalArgumentException.class, () -> coursesService.create(request));
+        verify(coursesRepository, never()).save(any());
     }
 
     @Test
     void testCreateInvalidCourseShouldNotCallSave() {
-        course.setName(null);
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName(null);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.create(coursesMapper.toRequestCourseDTO(course)));
-
+        assertThrows(IllegalArgumentException.class, () -> coursesService.create(request));
         verify(coursesRepository, never()).save(any());
     }
 
     @Test
     void testUpdateWithNullNameShouldFail() {
-        course.setName(null);
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName(null);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
+        assertThrows(IllegalArgumentException.class, () -> coursesService.update(1, request));
+        verifyNoInteractions(coursesRepository);
     }
 
     @Test
     void testUpdateWithEmptyNameShouldFail() {
-        course.setName("");
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("");
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
+        assertThrows(IllegalArgumentException.class, () -> coursesService.update(1, request));
+        verifyNoInteractions(coursesRepository);
     }
 
     @Test
     void testUpdateWithVeryLongNameShouldFail() {
-        course.setName("A".repeat(256));
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("A".repeat(256));
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
+        assertThrows(IllegalArgumentException.class, () -> coursesService.update(1, request));
+        verifyNoInteractions(coursesRepository);
     }
 
     @Test
     void testUpdateWhenCourseDoesNotExist() {
         when(coursesRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,
-                () -> coursesService.update(1, coursesMapper.toRequestCourseDTO(course)));
+        RequestCourseDTO request = new RequestCourseDTO();
+        request.setName("Qualquer Nome");
+
+        assertThrows(RuntimeException.class, () -> coursesService.update(1, request));
+        verify(coursesRepository, never()).save(any());
     }
 
     @Test
     void testFindOrCreateByNameWhenExists() {
-        when(coursesRepository.findByName("Análise de Sistemas"))
-                .thenReturn(course);
+        when(coursesRepository.findByName("Análise de Sistemas")).thenReturn(course);
 
         Courses result = coursesService.findOrCreateByName("Análise de Sistemas");
 
@@ -177,11 +198,11 @@ class CoursesServiceTest {
     @Test
     void testFindOrCreateByNameWhenNotExists() {
         when(coursesRepository.findByName("ADS")).thenReturn(null);
-        when(coursesRepository.save(any())).thenReturn(course);
+        when(coursesRepository.save(any(Courses.class))).thenReturn(course);
 
         Courses result = coursesService.findOrCreateByName("ADS");
 
         assertNotNull(result);
-        verify(coursesRepository).save(any());
+        verify(coursesRepository).save(any(Courses.class));
     }
 }
