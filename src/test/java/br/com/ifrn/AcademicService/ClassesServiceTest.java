@@ -316,7 +316,7 @@ class ClassesServiceTest {
         // Agora passando apenas 4 parâmetros conforme seu novo Service
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
             classesService.createOrUpdateClassByClassId(
-                    "Info", null, "Vespertino", "user-1"
+                    "Info", null, "Vespertino","1°", "user-1"
             );
         });
 
@@ -341,7 +341,7 @@ class ClassesServiceTest {
 
         // Chamada ao método com a nova assinatura
         Classes result = classesService.createOrUpdateClassByClassId(
-                courseName, classId, shift, userId
+                courseName, classId, shift, turma.getGradleLevel(), userId
         );
 
         assertEquals(course, result.getCourse());
@@ -369,7 +369,7 @@ class ClassesServiceTest {
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática", classId, "Vespertino", "user-new"
+                "Informática", classId, "Vespertino", "1°","user-new"
         );
 
         assertTrue(result.getUserId().contains("user-old"));
@@ -390,7 +390,7 @@ class ClassesServiceTest {
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática",  classId, "Vespertino", "user-1"
+                "Informática",  classId, "Vespertino","1°", "user-1"
         );
 
         assertEquals(1, result.getUserId().size());
@@ -410,7 +410,7 @@ class ClassesServiceTest {
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Classes result = classesService.createOrUpdateClassByClassId(
-                "Informática",  classId, "Vespertino", "user-2"
+                "Informática",  classId, "Vespertino", "1°","user-2"
         );
         assertTrue(result.getUserId().contains("user-2"));
     }

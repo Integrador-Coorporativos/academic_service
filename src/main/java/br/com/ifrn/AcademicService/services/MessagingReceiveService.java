@@ -21,6 +21,7 @@ public class MessagingReceiveService {
             classMessageDTO.getCourse(),
             classMessageDTO.getClassId(),
             classMessageDTO.getShift(),
+            classMessageDTO.getSemester(),
             classMessageDTO.getUserId()
         );
 

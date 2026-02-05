@@ -32,7 +32,7 @@ public class StudentPerformanceController implements StudentPerformanceControlle
         return ResponseEntity.ok().body(studentPerformanceService.getAllStudentPerformance());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROFESSOR', 'ROLE_ALUNO')")
     @GetMapping("/class/{id}/{year}/bimestre/{bimestre}")
     public ResponseEntity<ResponseclassificationsClassDTO> getClassEvaluationsById(@PathVariable Integer id, @PathVariable Integer year, @PathVariable Integer bimestre) {
         return ResponseEntity.ok().body(studentPerformanceService.getClassificationByClassId(id, year, bimestre));
