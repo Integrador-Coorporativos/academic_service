@@ -362,7 +362,7 @@ class ClassesServiceTest {
     @Test
     void testCreateOrUpdateClassIdNullShouldThrow() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                classesService.createOrUpdateClassByClassId("Info", null, "Vespertino", "user-1")
+                classesService.createOrUpdateClassByClassId("Info", null, "Vespertino", "1°", "user-1")
         );
 
         assertEquals("classId não pode ser nulo", ex.getMessage());
@@ -385,7 +385,7 @@ class ClassesServiceTest {
 
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.createOrUpdateClassByClassId(courseName, classId, shift, userId);
+        Classes result = classesService.createOrUpdateClassByClassId(courseName, classId, shift, turma.getGradleLevel(), userId);
 
         assertEquals(c, result.getCourse());
         assertEquals(classId, result.getClassId());
@@ -410,7 +410,7 @@ class ClassesServiceTest {
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino", "user-new");
+        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino", "1°", "user-new");
 
         assertTrue(result.getUserId().contains("user-old"));
         assertTrue(result.getUserId().contains("user-new"));
@@ -429,7 +429,7 @@ class ClassesServiceTest {
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino", "user-1");
+        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino","1°", "user-1");
 
         assertEquals(1, result.getUserId().size());
         assertEquals("user-1", result.getUserId().get(0));
@@ -447,7 +447,7 @@ class ClassesServiceTest {
         when(classesRepository.findByClassId(classId)).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino", "user-2");
+        Classes result = classesService.createOrUpdateClassByClassId("Informática", classId, "Vespertino", "1°","user-2");
 
         assertTrue(result.getUserId().contains("user-2"));
     }
@@ -502,7 +502,7 @@ class ClassesServiceTest {
         when(classesRepository.findByClassId("T01")).thenReturn(existing);
         when(classesRepository.save(any(Classes.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Classes result = classesService.createOrUpdateClassByClassId("Informática", "T01", "Vespertino", "user-x");
+        Classes result = classesService.createOrUpdateClassByClassId("Informática", "T01", "Vespertino",  "1°", "user-x");
 
         assertNotNull(result.getUserId());
         assertTrue(result.getUserId().contains("user-x"));
