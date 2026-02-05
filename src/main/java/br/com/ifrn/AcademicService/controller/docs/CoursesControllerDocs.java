@@ -2,7 +2,7 @@ package br.com.ifrn.AcademicService.controller.docs;
 
 import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
 import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
-import br.com.ifrn.AcademicService.models.Courses;
+import br.com.ifrn.AcademicService.dto.response.ResponseCourseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +22,7 @@ public interface CoursesControllerDocs {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<List<Courses>> getAll();
+    ResponseEntity<List<ResponseCourseDTO>> getAll();
 
     @Operation(summary = "Cria um novo curso")
     @ApiResponses(value = {
@@ -32,7 +32,7 @@ public interface CoursesControllerDocs {
             @ApiResponse(responseCode = "409", description = "Conflito ao criar curso"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Courses> create(RequestCourseDTO courseDTO);
+    ResponseEntity<ResponseCourseDTO> create(RequestCourseDTO courseDTO);
 
     @Operation(summary = "Recupera detalhes de um curso específico")
     @ApiResponses(value = {
@@ -41,7 +41,7 @@ public interface CoursesControllerDocs {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Courses> getById(Integer id);
+    ResponseEntity<ResponseCourseDTO> getById(Integer id);
 
     @Operation(summary = "Atualiza informações de um curso existente")
     @ApiResponses(value = {
@@ -51,7 +51,7 @@ public interface CoursesControllerDocs {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Courses> update(Integer id, RequestCourseDTO course);
+    ResponseEntity<ResponseCourseDTO> update(Integer id, RequestCourseDTO course);
 
     @Operation(summary = "Remove um curso do sistema")
     @ApiResponses(value = {

@@ -1,10 +1,14 @@
 package br.com.ifrn.AcademicService.services;
 
+import br.com.ifrn.AcademicService.dto.request.RequestCourseDTO;
 import br.com.ifrn.AcademicService.dto.response.CoursePanelResponseDTO;
+import br.com.ifrn.AcademicService.dto.response.ResponseCourseDTO;
+import br.com.ifrn.AcademicService.mapper.CoursesMapper;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
 import br.com.ifrn.AcademicService.repository.CoursesRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,18 +27,25 @@ public class CoursesService {
     @Autowired
     private ClassesRepository classesRepository;
 
+    @Autowired
+    private CoursesMapper  coursesMapper;
+
     @Cacheable(value = "coursesCacheAll")
-    public List<Courses> getAll() {
-        return coursesRepository.findAll();
+    public List<ResponseCourseDTO> getAll() {
+        List<Courses> coursesList = coursesRepository.findAll();
+        List<ResponseCourseDTO> responseCourseDTOList = coursesMapper.toResponseCourseDTO(coursesList);
+        return responseCourseDTOList;
     }
 
     @Cacheable(value = "coursesCache", key = "#id")
-    public Optional<Courses> getById(Integer id) {
-        return coursesRepository.findById(id);
+    public ResponseCourseDTO getById(Integer id) {
+        ResponseCourseDTO responseCourseDTO = coursesMapper.toResponseCourseDTO(coursesRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Course not found with id: " + id)));
+        return responseCourseDTO;
     }
 
     @CacheEvict(value = "coursesCacheAll", allEntries = true)
-    public Courses create(Courses course) {
+    public ResponseCourseDTO create(RequestCourseDTO course) {
 
         if (course.getName() == null ||
                 course.getName().isEmpty() ||
@@ -43,11 +54,11 @@ public class CoursesService {
             throw new IllegalArgumentException("Nome ou Descrição do curso inválido!");
         }
 
-        return findOrCreateByName(course.getName());
+        return coursesMapper.toResponseCourseDTO(findOrCreateByName(course.getName()));
     }
 
     @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)
-    public Courses update(Integer id, Courses courseDetails) {
+    public ResponseCourseDTO update(Integer id, RequestCourseDTO courseDetails) {
 
         if (courseDetails.getName() == null) {
             throw new IllegalArgumentException("Nome do curso não pode ser nulo");
@@ -65,8 +76,7 @@ public class CoursesService {
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
 
         course.setName(courseDetails.getName());
-
-        return coursesRepository.save(course);
+        return coursesMapper.toResponseCourseDTO(coursesRepository.save(course));
     }
 
     @CacheEvict(value = {"coursesCacheAll", "coursesCache"}, allEntries = true)

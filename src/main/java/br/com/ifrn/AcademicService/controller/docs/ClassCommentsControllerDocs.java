@@ -29,7 +29,7 @@ public interface ClassCommentsControllerDocs {
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada")
     })
-    ResponseEntity<ClassComments> create(Integer classId, RequestCommentDTO commentDTO, Authentication authentication);
+    ResponseEntity<ResponseCommentDTO> create(Integer classId, RequestCommentDTO commentDTO, Authentication authentication);
 
     @Operation(summary = "Edita um comentário existente")
     @ApiResponses(value = {
@@ -39,7 +39,7 @@ public interface ClassCommentsControllerDocs {
             @ApiResponse(responseCode = "403", description = "Acesso proibido"),
             @ApiResponse(responseCode = "404", description = "Comentário ou turma não encontrada"),
     })
-    ResponseEntity<ClassComments> update(Integer classId, Integer commentId, ClassComments comment);
+    ResponseEntity<ResponseCommentDTO> update(Integer commentId, RequestCommentDTO comment, Authentication authentication) throws IllegalAccessException;
 
     @Operation(summary = "Remove um comentário existente")
     @ApiResponses(value = {

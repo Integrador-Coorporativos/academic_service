@@ -1,6 +1,7 @@
 package br.com.ifrn.AcademicService.services;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
+import br.com.ifrn.AcademicService.dto.request.RequestClassDTO;
 import br.com.ifrn.AcademicService.dto.response.*;
 import br.com.ifrn.AcademicService.mapper.ClassMapper;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
@@ -8,6 +9,7 @@ import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.repository.ClassesRepository;
+import br.com.ifrn.AcademicService.repository.CoursesRepository;
 import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -26,6 +28,9 @@ public class ClassesService {
     ClassesRepository classesRepository;
 
     @Autowired
+    CoursesRepository coursesRepository;
+
+    @Autowired
     CoursesService coursesService;
 
     @Autowired
@@ -41,9 +46,23 @@ public class ClassesService {
     KeycloakAdminConfig keycloakAdminConfig;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "classesCacheAll")
-    public List<ResponseClassDTO> getAll() {
-        return classsMapper.toResponseClassDTO(classesRepository.findAllWithCourse());
+    @Cacheable(value = "classesCacheAll", key = "#professorId")
+    public List<ResponseClassDTO> getAll(String professorId) {
+        List<Classes> classes = classesRepository.findAllWithCourse();
+        List<ResponseClassDTO> responseClassDTOList =  new ArrayList<>();
+        classes.forEach(c ->{
+            ResponseClassDTO responseClassDTO = classsMapper.toResponseClassDTO(c);
+            if (c.getProfessors().contains(professorId)){
+                responseClassDTO.setTeacherLinked(true);
+            }
+            responseClassDTOList.add(responseClassDTO);
+        });
+        return responseClassDTOList;
+    }
+
+    @Cacheable(value = "getMyClasses", key = "#professorId")
+    public List<ResponseClassDTO> getMyClasses(String professorId) {
+        return classsMapper.toResponseClassDTO(classesRepository.findClassesByProfessor(professorId));
     }
 
     @Cacheable(value = "classesCache", key = "#id")
@@ -106,39 +125,35 @@ public class ClassesService {
 
             return dto;
         }).collect(Collectors.toList());
-
         ResponseClassByIdDTO response = classsMapper.toResponseClassByDTO(classe);
         response.setStudents(classStudents);
-
         return response;
     }
 
     @CacheEvict(value = "classesCacheAll", allEntries = true)
-    public Classes create(Classes turma) {
-
-        if (turma.getName() == null) {
-            throw new IllegalArgumentException("Nome da turma não pode ser nulo");
-        }
-        if (turma.getName().isEmpty()) {
-            throw new IllegalArgumentException("Nome da turma não pode ser vazio");
-        }
-        if (turma.getName().length() > 255) {
-            throw new IllegalArgumentException("Nome da turma não pode exceder 255 caracteres");
-        }
-
-        return classesRepository.save(turma);
+    public ResponseClassDTO create(Integer courseId, RequestClassDTO requestClassDTO) {
+        Courses curso = coursesRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!"));
+        Classes classe = classsMapper.toClassDTO(requestClassDTO);
+        classe.setCourse(curso);
+        classe.setName(classe.getCourse().getName() + "_" + classe.getClassId());
+        ResponseClassDTO response = classsMapper.toResponseClassDTO(classesRepository.save(classe));
+        return response;
     }
 
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
     @Transactional
-    public Classes update(Integer id, Classes turmaDetails) {
+    public ResponseClassDTO update(Integer id, Integer courseId, RequestClassDTO classDetails) {
         Classes turma = classesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Classe not found"));
-
-        turma.setName(turmaDetails.getName());
-        turma.setCourse(turmaDetails.getCourse());
-
-        return classesRepository.save(turma);
+        Courses curso = classesRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Curso não encontrado!")).getCourse();
+        turma.setName(curso.getName() + "_" + classDetails.getClassId());
+        turma.setCourse(curso);
+        turma.setShift(classDetails.getShift());
+        turma.setGradleLevel(classDetails.getGradleLevel());
+        ResponseClassDTO responseClassDTO = classsMapper.toResponseClassDTO(classesRepository.save(turma));
+        return responseClassDTO;
     }
 
     @CacheEvict(value = {"classesCacheAll", "classesCache"}, allEntries = true)
@@ -148,6 +163,17 @@ public class ClassesService {
         }
         classesRepository.deleteById(id);
         return true;
+    }
+
+    @CacheEvict(value = {"classesCacheAll", "getMyClasses", "classesCache"}, allEntries = true)
+    public ResponseClassDTO addProfessorToClass(Integer id, String professorId) {
+        Classes classe = classesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Classe not found"));
+        if (classe.getProfessors().contains(professorId)){
+            classe.getProfessors().remove(professorId);
+        }else {
+            classe.getProfessors().add(professorId);
+        }
+        return classsMapper.toResponseClassDTO(classesRepository.save(classe));
     }
 
 
@@ -190,7 +216,10 @@ public class ClassesService {
     @Transactional
     public Classes createOrUpdateClassByClassId(
             String courseName,
-            String classId, String shift, String userId) {
+            String classId,
+            String shift,
+            String gradleLevel,
+            String userId) {
 
         if (classId == null)
             throw new IllegalArgumentException("classId não pode ser nulo");
@@ -208,6 +237,7 @@ public class ClassesService {
             classes.setClassId(classId);
             classes.setShift(shift);
             classes.setName(course.getName() + "_" + classId);
+            classes.setGradleLevel(gradleLevel);
 
             return classesRepository.save(classes);
         }

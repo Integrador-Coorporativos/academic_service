@@ -1,9 +1,9 @@
 package br.com.ifrn.AcademicService.config;
 
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakPropertiesConfig;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.util.List;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+
 
 @Configuration
 public class OpenApiConfig {
@@ -46,10 +49,20 @@ public class OpenApiConfig {
                         new Tag().name("Desempenho").description("Operações relacionadas a Desempenho"),
                         new Tag().name("Classes").description("Operações relacionadas a Turmas"),
                         new Tag().name("Courses").description("Operações relacionadas a Cursos"),
-                        new Tag().name("Comments").description("Operações relacionadas a Comentários")
+                        new Tag().name("Comments").description("Operações relacionadas a Comentários"),
+                        new Tag().name("Painel de Controle").description("Operações relacionadas ao Painel de Controle")
                 ))
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentação do Projeto")
-                        .url("https://github.com/Integrador-Coorporativos/academic_service"));
+                        .url("https://github.com/Integrador-Coorporativos/academic_service"))
+
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .name("bearerAuth")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 }

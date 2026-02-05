@@ -3,6 +3,7 @@ package br.com.ifrn.AcademicService.mapper;
 
 import br.com.ifrn.AcademicService.dto.ImportMessageDTO;
 import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceDTO;
+import br.com.ifrn.AcademicService.dto.request.RequestStudentPerformanceUpdateDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseStudentPerformanceDTO;
 import br.com.ifrn.AcademicService.dto.response.StudentDataDTO;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
@@ -31,11 +32,12 @@ public interface StudentPerformanceMapper {
     @Mapping(source = "ira", target = "ira")
     RequestStudentPerformanceDTO toRequestStudentPerformanceByConsumerMessageDto (ImportMessageDTO dto);
 
+    RequestStudentPerformanceUpdateDTO toRequestStudentPerformanceUpdateDto (RequestStudentPerformanceDTO entity);
+
     @Mapping(source = "failedSubjects", target = "failedSubjects")
     //@Mapping(source = "averageScore", target = "averageScore")
     @Mapping(source = "attendenceRate", target = "attendenceRate")
     @Mapping(source = "ira", target = "ira")
-    @Mapping(source = "classId", target = "classId")
-    void updateEntityFromDto(RequestStudentPerformanceDTO dto,
+    void updateEntityFromDto(RequestStudentPerformanceUpdateDTO dto,
                              @MappingTarget StudentPerformance entity);
 }

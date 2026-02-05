@@ -3,6 +3,7 @@ package br.com.ifrn.AcademicService.services;
 import br.com.ifrn.AcademicService.config.keycloak.KeycloakAdminConfig;
 import br.com.ifrn.AcademicService.dto.request.RequestCommentDTO;
 import br.com.ifrn.AcademicService.dto.response.ResponseCommentDTO;
+import br.com.ifrn.AcademicService.mapper.CommentsMapper;
 import br.com.ifrn.AcademicService.models.ClassComments;
 import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.repository.ClassCommentsRepository;
@@ -13,9 +14,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +32,9 @@ public class ClassCommentsService {
 
     @Autowired
     private ClassesRepository classesRepository;
+
+    @Autowired
+    private CommentsMapper  commentsMapper;
 
     @Cacheable(value = "commentsCache", key = "#turmaId")
     public List<ResponseCommentDTO> getByTurma(Integer turmaId) {
@@ -51,16 +54,8 @@ public class ClassCommentsService {
     }
 
     @CacheEvict(value = "commentsCache", allEntries = true)
-    public ClassComments create(RequestCommentDTO commentDTO, String professorId, Integer classId) {
-        if (commentDTO.getComment() == null) {
-            throw new IllegalArgumentException("Comentário não pode ser nulo");
-        }
-        if (commentDTO.getComment().trim().isEmpty()) {
-            throw new IllegalArgumentException("Comentário não pode ser vazio");
-        }
-        if (commentDTO.getComment().length() > 255) {
-            throw new IllegalArgumentException("Comentário não pode exceder 255 caracteres");
-        }
+    @Transactional
+    public ResponseCommentDTO create(RequestCommentDTO commentDTO, String professorId, Integer classId) {
         if (professorId == null || professorId.trim().isEmpty()) {
             throw new IllegalArgumentException("Professor ID inválido!");
         }
@@ -76,16 +71,19 @@ public class ClassCommentsService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar dados do professor", e);
         }
-        return commentRepository.save(classComments);
+        return commentsMapper.toResponseClassCommentsDTO(commentRepository.save(classComments));
     }
 
     @CacheEvict(value = "commentsCache", allEntries = true)
-    public ClassComments update(ClassComments comment) {
-        ClassComments classComment = commentRepository.findById(comment.getId())
+    @Transactional
+    public ResponseCommentDTO update(Integer commentId,  RequestCommentDTO comment, String professorId) throws IllegalAccessException {
+        ClassComments classComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ccomentário não encontrado!"));
-        classComment.setComment(comment.getComment());
-        classComment.setUpdatedAt(comment.getUpdatedAt());
-        return commentRepository.save(classComment);
+        if (classComment.getProfessorId().equals(professorId)) {
+            classComment.setComment(comment.getComment());
+        }else throw new IllegalAccessException("O comentário só pode ser alterado pelo usuário de criação!");
+
+        return commentsMapper.toResponseClassCommentsDTO(commentRepository.save(classComment));
     }
 
     @CacheEvict(value = "commentsCache", allEntries = true)

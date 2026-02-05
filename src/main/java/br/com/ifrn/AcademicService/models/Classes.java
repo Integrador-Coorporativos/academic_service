@@ -24,6 +24,7 @@ public class Classes {
     @Column(name = "name",  nullable = false,  length = 255)
     private String name;
     private String shift;
+    private String gradleLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
@@ -36,10 +37,14 @@ public class Classes {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private List<ClassComments> comments;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnore
     private List<String> userId;
 
     private String classId; //id da turma fornecido na planilha
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<String> professors;
 
 }

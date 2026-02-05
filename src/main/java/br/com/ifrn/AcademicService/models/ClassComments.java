@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -37,7 +39,8 @@ public class ClassComments {
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @NotAudited
+    @JsonIgnore
     private Classes classe;
 
 

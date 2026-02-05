@@ -5,12 +5,15 @@ import br.com.ifrn.AcademicService.models.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter
-public class StudentDataDTO {
+public class StudentDataDTO implements Serializable {
 
     private Integer id;
     private String name;
     private String registration;
+    private String email;
     private String studentId;
     private String classId;
     private float averageScore;

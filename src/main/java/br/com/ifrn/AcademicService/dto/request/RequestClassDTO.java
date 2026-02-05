@@ -1,5 +1,6 @@
 package br.com.ifrn.AcademicService.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -12,11 +13,7 @@ public class RequestClassDTO implements Serializable {
 
     @NotNull
     @Size(min = 1, max = 100)
-    private String name;
-
-    @NotNull
-    @Size(min = 1, max = 100)
-    private String semester;
+    private String gradleLevel;
 
     @NotNull
     @Size(min = 1, max = 100)
