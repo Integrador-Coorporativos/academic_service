@@ -1,9 +1,12 @@
 package br.com.ifrn.AcademicService.dto.response;
 
+import br.com.ifrn.AcademicService.models.EvaluationPeriod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Optional;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -21,4 +24,5 @@ public class ResponseclassificationsClassDTO {
     private float cellPhoneUseScore; //uso de celular
     private float averageScore; //pontuação média da avaliação
     private ResponseClassificationsRankDTO rank;
+    private Optional<EvaluationPeriod> evaluationPeriod;
 }

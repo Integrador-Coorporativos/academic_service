@@ -12,10 +12,7 @@ import br.com.ifrn.AcademicService.models.Classes;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.models.enums.Status;
 import br.com.ifrn.AcademicService.models.enums.StepName;
-import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
-import br.com.ifrn.AcademicService.repository.ClassesRepository;
-import br.com.ifrn.AcademicService.repository.EvaluationMetricsProjection;
-import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
+import br.com.ifrn.AcademicService.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,6 +38,9 @@ public class StudentPerformanceService {
 
     @Autowired
     ClassEvaluationsRepository classEvaluationsRepository;
+
+    @Autowired
+    EvaluationPeriodRepository  evaluationPeriodRepository;
 
 
     @Cacheable(value = "studentPerformanceCache", key = "#studentid")
@@ -145,6 +145,7 @@ public class StudentPerformanceService {
                 .orElseThrow(() -> new RuntimeException("Turma não encontrada ou sem avaliações para o ranking no ano de " + year));
 
         dto.setRank(rank);
+        dto.setEvaluationPeriod(evaluationPeriodRepository.findFirstByOrderByActiveDescStartDateDesc());
         return dto;
     }
 
@@ -186,7 +187,7 @@ public class StudentPerformanceService {
     @CacheEvict(value = "studentPerformanceCacheAll", allEntries = true)
     public ResponseStudentPerformanceDTO createStudentPerformanceByConsumerMessageDTO(ImportMessageDTO consumerMessageDTO) {
         //estrutura inicial
-        ResponseStudentPerformanceDTO responseDto =  new ResponseStudentPerformanceDTO();
+        ResponseStudentPerformanceDTO responseDto = new ResponseStudentPerformanceDTO();
         RequestStudentPerformanceDTO studentPerformanceDTO = mapper.toRequestStudentPerformanceByConsumerMessageDto(consumerMessageDTO);
         StudentPerformance studentPerformance = studentPerformanceRepository.findStudentPerformanceByStudentId(studentPerformanceDTO.getStudentId());
         if (studentPerformance == null) {

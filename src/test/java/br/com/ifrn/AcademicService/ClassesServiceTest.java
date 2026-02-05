@@ -496,7 +496,7 @@ class ClassesServiceTest {
     void createOrUpdateExistingWhenUserIdListNullShouldInitializeAndAdd() {
         Classes existing = new Classes();
         existing.setClassId("T01");
-        existing.setUserId(null); // branch importante
+        existing.setUserId(null);
         existing.setShift("Vespertino");
 
         when(classesRepository.findByClassId("T01")).thenReturn(existing);
@@ -506,7 +506,6 @@ class ClassesServiceTest {
 
         assertNotNull(result.getUserId());
         assertTrue(result.getUserId().contains("user-x"));
-        // shift igual -> não entra no if de update
         assertEquals("Vespertino", result.getShift());
         verify(classesRepository).save(existing);
     }

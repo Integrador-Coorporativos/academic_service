@@ -3,6 +3,7 @@ package br.com.ifrn.AcademicService.dto.response;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +22,12 @@ public class DashboardMetricsDTO {
     private Double studentsGoodStatusPercentage;
     private Double studentsAlertStatusPercentage;
     private Double studentsCriticalStatusPercentage;
+
+    private double frequencyScore; //frequencia
+    private double unifirmScore; //fardamento
+    private double behaviorScore; //comportamento
+    private double participationScore; //participação
+    private double performanceScore; //desempenho
+    private double cellPhoneUseScore; //uso de celular
+
 }
