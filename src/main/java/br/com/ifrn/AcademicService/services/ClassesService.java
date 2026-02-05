@@ -216,7 +216,10 @@ public class ClassesService {
     @Transactional
     public Classes createOrUpdateClassByClassId(
             String courseName,
-            String classId, String shift, String userId) {
+            String classId,
+            String shift,
+            String gradleLevel,
+            String userId) {
 
         if (classId == null)
             throw new IllegalArgumentException("classId não pode ser nulo");
@@ -234,6 +237,7 @@ public class ClassesService {
             classes.setClassId(classId);
             classes.setShift(shift);
             classes.setName(course.getName() + "_" + classId);
+            classes.setGradleLevel(gradleLevel);
 
             return classesRepository.save(classes);
         }

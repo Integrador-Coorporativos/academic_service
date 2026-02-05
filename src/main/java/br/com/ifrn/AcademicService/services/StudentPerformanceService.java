@@ -187,7 +187,7 @@ public class StudentPerformanceService {
     @CacheEvict(value = "studentPerformanceCacheAll", allEntries = true)
     public ResponseStudentPerformanceDTO createStudentPerformanceByConsumerMessageDTO(ImportMessageDTO consumerMessageDTO) {
         //estrutura inicial
-        ResponseStudentPerformanceDTO responseDto =  new ResponseStudentPerformanceDTO();
+        ResponseStudentPerformanceDTO responseDto = new ResponseStudentPerformanceDTO();
         RequestStudentPerformanceDTO studentPerformanceDTO = mapper.toRequestStudentPerformanceByConsumerMessageDto(consumerMessageDTO);
         StudentPerformance studentPerformance = studentPerformanceRepository.findStudentPerformanceByStudentId(studentPerformanceDTO.getStudentId());
         if (studentPerformance == null) {
