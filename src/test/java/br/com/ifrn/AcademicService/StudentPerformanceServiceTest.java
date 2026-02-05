@@ -12,10 +12,7 @@ import br.com.ifrn.AcademicService.models.Courses;
 import br.com.ifrn.AcademicService.models.EvaluationsCriteria;
 import br.com.ifrn.AcademicService.models.StudentPerformance;
 import br.com.ifrn.AcademicService.models.enums.StepName;
-import br.com.ifrn.AcademicService.repository.ClassEvaluationsRepository;
-import br.com.ifrn.AcademicService.repository.ClassesRepository;
-import br.com.ifrn.AcademicService.repository.EvaluationMetricsProjection;
-import br.com.ifrn.AcademicService.repository.StudentPerformanceRepository;
+import br.com.ifrn.AcademicService.repository.*;
 import br.com.ifrn.AcademicService.mapper.StudentPerformanceMapper;
 import br.com.ifrn.AcademicService.services.StudentPerformanceService;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +35,9 @@ class StudentPerformanceServiceTest {
 
     @Mock
     private StudentPerformanceRepository studentPerformanceRepository;
+
+    @Mock
+    private EvaluationPeriodRepository evaluationPeriodRepository;
 
     @Mock
     private StudentPerformanceMapper mapper;
